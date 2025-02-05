@@ -33,7 +33,7 @@ model Account {
   userId             String  
   type               String  
   provider           String  
-  providerAccountId  String    
+  providerAccountId  String  @unique  
   refresh_token      String?  
   access_token       String? 
   id_token           String? 
