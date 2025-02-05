@@ -1,14 +1,9 @@
-## prisma , rate limiting , open api docs , 
-
-
-
-
-
+# prisma , rate limiting , open api docs , testing , setup eslint , pretier , husky, shadcn ui ,  next-auth , Graph Ql
 
 <h2>
 NEXT.js Version 15 React 19 :</h2>
 
-Next js is the a Reat  framWork for Web 
+Next js is the a Reat framWork for Web
 
 What is I'll get?
 
@@ -42,3 +37,20 @@ Here's What it does in simple term:
 <li>Developer's Best Friend </li>
 </ul>
 </div>
+
+<>
+
+## SSG
+
+when we deploy next js application then its render html page and its save in server ,, when user acess the site then next js direclty give that file to user .. performance increase  .. it is only for static page 
+
+## SSR
+user reuest for content 
+
+
+## ISR
+extension of ssg, 1:52
+
+## PPR
+
+</>
