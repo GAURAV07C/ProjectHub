@@ -5,7 +5,7 @@ import React from "react";
 
 
 
-// ✅ Fix: Accept props with correct type
+
 const Page = () => {
  
 
