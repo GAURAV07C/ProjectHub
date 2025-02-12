@@ -27,8 +27,7 @@ const ProjectForm = () => {
   const details = watch("details", "");
 
   const onSubmit = async (data: any) => {
-    console.log("🚀 Form Submitted! 🚀");
-    console.log("Form Data:", data);
+   
 
     // Send form data to the server to be saved in the database
     const formData = new FormData();

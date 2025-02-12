@@ -19,7 +19,7 @@ const User = async ({ params }: { params: Promise< { id: string } > }) => {
   const user = await getUserById((await params).id);
   const projectsResponse = await getProjectsByUserId((await params).id);
 
-  console.log("project " + projectsResponse.projects);
+
 
   if (!user) {
     return <p className="text-center text-gray-500">User not found.</p>;
@@ -64,9 +64,7 @@ const User = async ({ params }: { params: Promise< { id: string } > }) => {
         <ul className="mt-7 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-1 justify-center">
           {projectsResponse.success && projectsResponse.projects.length > 0 ? (
             projectsResponse.projects.map((project) => {
-              // Log the userId of each project
-              console.log("Project ID: ", project.id);
-              console.log("Project User ID: ", project.userId); // This will log the userId for each project
+             
 
               return (
                 <Project3DCard

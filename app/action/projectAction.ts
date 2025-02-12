@@ -17,11 +17,11 @@ export async function createProject(formData: FormData) {
 
     // Extract userId from session
     const userId = session.user.id;
-    console.log(userId);
+  
 
     // Convert FormData to an object
     const data = Object.fromEntries(formData.entries());
-    console.log(data);
+  
     // Ensure field name consistency (`imageurl` → `imageUrl`)
     const correctedData = {
       ...data,
