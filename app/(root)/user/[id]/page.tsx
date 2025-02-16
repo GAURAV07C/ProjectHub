@@ -1,25 +1,14 @@
-import { getProjectsByUserId, getUserById } from "@/app/action/projectAction";
+import { getProjectsByUserId, getUserById } from "@/actions/projectAction";
 import Project3DCard from "@/components/Project3DCard";
 import { EvervaultCard, Icon } from "@/components/ui/evervault-card";
 import { auth } from "@/lib/auth";
 import Link from "next/link";
 import React from "react";
-import { string } from "zod";
 
-
-
-
-
-
-
-
-
-const User = async ({ params }: { params: Promise< { id: string } > }) => {
+const User = async ({ params }: { params: Promise<{ id: string }> }) => {
   const session = await auth();
   const user = await getUserById((await params).id);
   const projectsResponse = await getProjectsByUserId((await params).id);
-
-
 
   if (!user) {
     return <p className="text-center text-gray-500">User not found.</p>;
@@ -64,8 +53,6 @@ const User = async ({ params }: { params: Promise< { id: string } > }) => {
         <ul className="mt-7 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-1 justify-center">
           {projectsResponse.success && projectsResponse.projects.length > 0 ? (
             projectsResponse.projects.map((project) => {
-             
-
               return (
                 <Project3DCard
                   key={project.id}

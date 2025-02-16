@@ -1,84 +1,94 @@
 import NextAuth from "next-auth";
-import Github from "next-auth/providers/github";
-import Credentials from "next-auth/providers/credentials";
-// import { PrismaAdapter } from "@auth/prisma-adapter";
-import db from "./db/db";
 
-// const adapter = PrismaAdapter(db);
+import authConfig from "@/lib/auth.config";
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import { prisma } from "@/lib/prisma";
 
-async function testDB() {
+import { getUserById } from "@/data/user";
+
+async function testprisma() {
   try {
-    await db.$connect();
+    await prisma.$connect();
     console.log("Database connected successfully!");
   } catch (error) {
     console.error("Database connection failed:", error);
   }
 }
 
-testDB();
+testprisma();
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  providers: [
-    Github({
-      clientId: process.env.AUTH_GITHUB_ID!,
-      clientSecret: process.env.AUTH_GITHUB_SECRET!,
-      authorization: {
-        params: {
-          prompt: "consent",
-          access_type: "offline",
-          response_type: "code",
-        },
-      },
-    }),
-    Credentials({
-      name: "Credentials",
-      credentials: {
-        email: {},
-        password: {},
-      },
-      authorize: async (credentials) => {
-        const { email, password } = credentials as {
-          email: string;
-          password: string;
-        };
-        if (!email || !password) {
-          throw new Error("Missing email or password");
-        }
-
-        const user = await db.user.findUnique({
-          where: {
-            email: credentials.email as string,
-            password: credentials.password as string, // Direct password match (not recommended for production)
-          },
-        });
-
-        if (!user) {
-          throw new Error("Invalid email or password");
-        }
-
-        return user; // NextAuth handles JWT automatically
-      },
-    }),
-  ],
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-        token.email = user.email;
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      if (token.id) {
-        session.user = {
-          ...session.user,
-          id: token.id as string,
-        };
-      }
-      return session;
+  pages: {
+    signIn: "/auth/login",
+    error: "/auth/error",
+  },
+  events: {
+    async linkAccount({ user }) {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { emailVerified: new Date(), userName: user.email },
+      });
     },
   },
+  callbacks: {
+    // async signIn({user}) {
+
+    //   if (!user.id) return false;
+
+    //   const existingUser = await getUserById(user.id);
+
+    //   if(!existingUser || !existingUser.emailVerified ){
+    //     return false
+    //   }
+
+    //   return true
+    // },
+
+    async session({ token, session }) {
+      if (token.sub && session.user) {
+        session.user.id = token.sub;
+      }
+
+      // if (token.userName && session.user) {
+      //   session.user.userName = token.userName;
+      // }
+      return session;
+    },
+
+    async jwt({ token }) {
+      // if (!token.sub) return token;
+
+      // const existingUser = await getUserById(token.sub);
+
+      // if (!existingUser) return token;
+
+      // token.userName = existingUser.userName;
+
+      return token;
+    },
+  },
+  adapter: PrismaAdapter(prisma),
   session: {
     strategy: "jwt",
   },
+  ...authConfig,
+
+  // callbacks: {
+  //   async jwt({ token, user }) {
+  //     if (user) {
+  //       token.id = user.id;
+  //       token.email = user.email;
+  //     }
+  //     return token;
+  //   },
+  //   async session({ session, token }) {
+  //     if (token.id) {
+  //       session.user = {
+  //         ...session.user,
+  //         id: token.id as string,
+  //       };
+  //     }
+  //     return session;
+  //   },
+  // },
 });

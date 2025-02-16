@@ -77,7 +77,7 @@ export const CardContainer = ({
   );
 };
 
-export const CardBody = ({
+export const Carprismaody = ({
   children,
   className,
 }: {
@@ -125,7 +125,7 @@ export const CardItem = ({
 
   useEffect(() => {
     handleAnimations();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMouseEntered]);
 
   const handleAnimations = () => {

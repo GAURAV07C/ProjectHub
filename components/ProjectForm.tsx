@@ -3,13 +3,13 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { projectSchema } from "@/validation/projectSchema";
+import { projectSchema } from "@/schemas/projectSchema";
 // import { createProject } from "@/actions/projectAction"; // Import server action
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
 import MDEditor from "@uiw/react-md-editor";
-import { createProject } from "@/app/action/projectAction";
+import { createProject } from "@/actions/projectAction";
 
 const ProjectForm = () => {
   const [message, setMessage] = useState("");
@@ -27,8 +27,6 @@ const ProjectForm = () => {
   const details = watch("details", "");
 
   const onSubmit = async (data: any) => {
-   
-
     // Send form data to the server to be saved in the database
     const formData = new FormData();
     formData.append("title", data.title);

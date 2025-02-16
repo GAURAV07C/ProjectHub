@@ -29,13 +29,13 @@ const NavBar = async () => {
       ) : (
         <div className="flex items-center gap-4">
           <Link
-            href="/sign-in"
+            href="/auth/login"
             className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
           >
             Sign In
           </Link>
           <Link
-            href="/sign-up"
+            href="/auth/signup"
             className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
           >
             Sign Up

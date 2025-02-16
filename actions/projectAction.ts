@@ -2,9 +2,8 @@
 
 import { prisma } from "@/lib/prisma"; // Import Prisma instance
 import { z } from "zod";
-import { projectSchema } from "@/validation/projectSchema";
+import { projectSchema } from "@/schemas/projectSchema";
 import { auth } from "@/lib/auth";
-import { NextResponse } from "next/server";
 
 export async function createProject(formData: FormData) {
   try {
@@ -17,11 +16,10 @@ export async function createProject(formData: FormData) {
 
     // Extract userId from session
     const userId = session.user.id;
-  
 
     // Convert FormData to an object
     const data = Object.fromEntries(formData.entries());
-  
+
     // Ensure field name consistency (`imageurl` → `imageUrl`)
     const correctedData = {
       ...data,
@@ -91,9 +89,7 @@ export const getProjectsByUserId = async (userId: string) => {
         title: true,
         description: true,
         imageUrl: true, // Include more fields if needed,
-        userId:true,
-        
-        
+        userId: true,
       },
     });
 
@@ -176,6 +172,4 @@ export const deleteProjects = async (projectId: string) => {
   });
 
   return { success: true, message: "Project deleted successfully" };
-}
-
-
+};

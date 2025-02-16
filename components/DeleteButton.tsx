@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { deleteProjects } from "@/app/action/projectAction"; // Import server action
+import { deleteProjects } from "@/actions/projectAction"; // Import server action
 
 // Modal component for confirmation
 const ConfirmationModal = ({

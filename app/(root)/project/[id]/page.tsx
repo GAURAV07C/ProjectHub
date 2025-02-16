@@ -1,9 +1,9 @@
-import { getProjectById } from "@/app/action/projectAction";
+import { getProjectById } from "@/actions/projectAction";
 import { Boxes } from "@/components/ui/background-boxes";
 import Image from "next/image";
 import Link from "next/link";
 
-const ProjectPage = async ({ params }:   { params: Promise  < { id: string }>}) => {
+const ProjectPage = async ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params;
 
   // Fetch the project data using the project ID
