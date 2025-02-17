@@ -31,18 +31,24 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
   },
   callbacks: {
-    // async signIn({user}) {
+    async signIn({ user, account }) {
+      if (!user.id) return false;
 
-    //   if (!user.id) return false;
+      if (account?.provider !== "credentials") {
+        return true;
+      }
 
-    //   const existingUser = await getUserById(user.id);
+      /***
+       * if user use credentials to login
+       * Prevent sign in without email verificaton
+       */
+      if (account?.provider === "credentials") {
+        const existingUser = await getUserById(user.id);
 
-    //   if(!existingUser || !existingUser.emailVerified ){
-    //     return false
-    //   }
-
-    //   return true
-    // },
+        if (!existingUser?.emailVerified) return false;
+      }
+      return true;
+    },
 
     async session({ token, session }) {
       if (token.sub && session.user) {
@@ -72,23 +78,4 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     strategy: "jwt",
   },
   ...authConfig,
-
-  // callbacks: {
-  //   async jwt({ token, user }) {
-  //     if (user) {
-  //       token.id = user.id;
-  //       token.email = user.email;
-  //     }
-  //     return token;
-  //   },
-  //   async session({ session, token }) {
-  //     if (token.id) {
-  //       session.user = {
-  //         ...session.user,
-  //         id: token.id as string,
-  //       };
-  //     }
-  //     return session;
-  //   },
-  // },
 });

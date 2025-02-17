@@ -25,6 +25,9 @@ const NavBar = async () => {
             </button>
           </form>
           {session.user?.name}
+          <div className="px-4">
+            <Link href={`user/${session.user?.id}`}> visite</Link>
+          </div>
         </div>
       ) : (
         <div className="flex items-center gap-4">
