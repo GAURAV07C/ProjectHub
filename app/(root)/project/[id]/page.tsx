@@ -2,6 +2,9 @@ import { getProjectById } from "@/actions/projectAction";
 import { Boxes } from "@/components/ui/background-boxes";
 import Image from "next/image";
 import Link from "next/link";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { CalendarIcon } from "lucide-react";
 
 const ProjectPage = async ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params;
@@ -10,65 +13,87 @@ const ProjectPage = async ({ params }: { params: Promise<{ id: string }> }) => {
   const response = await getProjectById(id);
 
   if (!response.success || !response.project) {
-    return <div>Project not found</div>;
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-2xl font-semibold text-gray-600">
+          Project not found
+        </p>
+      </div>
+    );
   }
 
   const project = response.project;
 
   return (
-    <>
+    <div className="min-h-screen bg-gradient-to-b from-gray-100 to-white">
       {/* Hero Section */}
-      <div className="h-96 relative w-full overflow-hidden bg-slate-900 flex flex-col items-center justify-center rounded-lg">
+      <div className="relative h-[70vh] w-full overflow-hidden bg-slate-900 flex flex-col items-center justify-center">
         <div className="absolute inset-0 w-full h-full z-20 [mask-image:radial-gradient(transparent,white)] pointer-events-none" />
         <Boxes />
-        <p className="tag relative">
-          {new Date(project.createdAt).toDateString()}
-        </p>
-        <h1 className="heading relative">{project.title}</h1>
-        <p className="sub-heading max-w-5xl relative">{project.description}</p>
+        <div className="relative z-30 text-center space-y-4 px-4">
+          <Badge variant="secondary" className="mb-2">
+            <CalendarIcon className="w-4 h-4 mr-2" />
+            {new Date(project.createdAt).toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}
+          </Badge>
+          <h1 className="text-4xl md:text-5xl font-bold text-white">
+            {project.title}
+          </h1>
+          <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+            {project.description}
+          </p>
+        </div>
       </div>
 
       {/* Project Section */}
-      <section className="section_container">
-        <Image
-          src={project.imageUrl || "/placeholder.png"}
-          alt="Project Image"
-          width={50}
-          height={50}
-          className="w-[70vw] h-auto rounded-xl mx-auto"
-        />
+      <section className="max-w-5xl mx-auto px-4 py-12">
+        <Card className="overflow-hidden shadow-xl">
+          <Image
+            src={project.imageUrl || "/placeholder.png"}
+            alt="Project Image"
+            width={1200}
+            height={675}
+            className="w-full h-auto object-cover"
+          />
+          <CardContent className="p-8">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+              <Link
+                href={`/user/${project.authorId}`}
+                className="flex items-center space-x-4 group"
+              >
+                <Image
+                  src={project.authorImage || "/placeholder.svg"}
+                  alt={project.authorName || "Author"}
+                  width={64}
+                  height={64}
+                  className="rounded-full shadow-lg group-hover:ring-2 ring-primary transition-all"
+                />
+                <div>
+                  <p className="text-lg font-semibold group-hover:text-primary transition-colors">
+                    {project.authorName}
+                  </p>
+                  <p className="text-sm text-gray-600">@{project.authorName}</p>
+                </div>
+              </Link>
+              <Badge className="mt-4 md:mt-0" variant="outline">
+                {project.category}
+              </Badge>
+            </div>
 
-        <div className="space-y-5 mt-10 max-w-4xl mx-auto">
-          <div className="flex-between gap-5">
-            {/* Link to User Profile */}
-            <Link
-              href={`/user/${project.authorId}`}
-              className="flex gap-2 items-center mb-3"
-            >
-              <Image
-                src={project.authorImage}
-                alt={project.authorName || "Author"}
-                width={64}
-                height={64}
-                className="rounded-full drop-shadow-lg"
+            <div className="space-y-6">
+              <h3 className="text-2xl font-bold">Project Details</h3>
+              <div
+                className="prose max-w-none"
+                dangerouslySetInnerHTML={{ __html: project.details || "" }}
               />
-              <div>
-                <p className="text-20-medium">{project.authorName}</p>
-                <p className="text-16-medium">@{project.authorName}</p>
-              </div>
-            </Link>
-
-            <p className="category-tag">{project.category}</p>
-          </div>
-
-          {/* Project Details */}
-          <h3 className="text-30-bold">Project Details</h3>
-          <p className="no-result">{project.details}</p>
-        </div>
-
-        <hr className="divider" />
+            </div>
+          </CardContent>
+        </Card>
       </section>
-    </>
+    </div>
   );
 };
 

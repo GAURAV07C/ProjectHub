@@ -1,4 +1,4 @@
-import Project3DCard from "@/components/Project3DCard";
+import Project3DCard from "@/components/projects/Project3DCard";
 import SearchForm from "@/components/SearchForm";
 import { Boxes } from "@/components/ui/background-boxes";
 

@@ -13,7 +13,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useState, useTransition } from "react";
+import { Suspense, useState, useTransition } from "react";
 import { useSearchParams } from "next/navigation";
 import CardWrapper from "@/components/auth/card-wrapper";
 import { Button } from "@/components/ui/button";
@@ -23,8 +23,19 @@ import { login } from "@/actions/authAction";
 import Link from "next/link";
 
 const LoginForm = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LoginFormContent />
+    </Suspense>
+  );
+};
+
+const LoginFormContent = () => {
   const searchParams = useSearchParams();
-  const urlError = searchParams.get("error") === "OAuthAccountNotLinked" ? "Email is Already in use with Different Provided" : ""
+  const urlError =
+    searchParams.get("error") === "OAuthAccountNotLinked"
+      ? "Email is Already in use with Different Provided"
+      : "";
   const [error, setError] = useState<string | undefined>("");
   const [sucess, setSucess] = useState<string | undefined>("");
   const [isPending, startTransition] = useTransition();
@@ -91,18 +102,13 @@ const LoginForm = () => {
                         type="password"
                       />
                     </FormControl>
-                    <Button 
-                    variant={"link"}
-                    asChild
-
-                    className="px-0 font-normal"
-                    
-                    size="sm"
+                    <Button
+                      variant={"link"}
+                      asChild
+                      className="px-0 font-normal"
+                      size="sm"
                     >
-                      <Link href={'/auth/reset'}>
-                        Forgot Password?
-                      
-                      </Link>
+                      <Link href={"/auth/reset"}>Forgot Password?</Link>
                     </Button>
                     <FormMessage />
                   </FormItem>

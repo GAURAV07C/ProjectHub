@@ -1,0 +1,19 @@
+<svg
+  width="100"
+  height="100"
+  viewBox="0 0 100 100"
+  xmlns="http://www.w3.org/2000/svg"
+  fill="none"
+>
+  <!-- Circle for the profile picture -->
+  <circle cx="50" cy="50" r="48" stroke="#D1D5DB" stroke-width="4" fill="#E5E7EB" />
+  
+  <!-- Head -->
+  <circle cx="50" cy="40" r="12" fill="#D1D5DB" />
+  
+  <!-- Body -->
+  <path
+    d="M30 75 C30 60, 70 60, 70 75"
+    fill="#D1D5DB"
+  />
+</svg>

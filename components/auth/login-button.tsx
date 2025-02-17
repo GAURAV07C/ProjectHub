@@ -11,6 +11,7 @@ interface LoginButtonProps {
 const LoginButton = ({
     children,
     mode='redirect',
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asChild
 }:LoginButtonProps) => {
     const onClick = () => {

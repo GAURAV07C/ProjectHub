@@ -81,14 +81,14 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
     return { error: "Email already in use!" };
   }
 
-  // const userName = email.split("@")[0];
+  const userName = email.split("@")[0];
 
   await prisma.user.create({
     data: {
       name: name,
       email: email,
       password: hashedPassword,
-      // userName: userName
+      userName: userName || ""
     },
   });
 

@@ -114,7 +114,7 @@ const FormControl = React.forwardRef<
     <Slot
       ref={ref}
       id={formItemId}
-      aria-describeprismay={
+      aria-describedby={
         !error
           ? `${formDescriptionId}`
           : `${formDescriptionId} ${formMessageId}`

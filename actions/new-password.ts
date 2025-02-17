@@ -49,9 +49,11 @@ export const newPassword = async (
     },
   });
 
-  await prisma?.passwordResetToken.delete({
-    where: { id: existingToken.id },
-  });
+  if (existingToken) {
+    await prisma?.passwordResetToken.delete({
+      where: { id: existingToken.id },
+    });
+  }
 
   return { sucess: "Password updated" };
 };

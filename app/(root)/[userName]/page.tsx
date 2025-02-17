@@ -1,6 +1,8 @@
-
-
-import { getProjectsByUserId, getUserById } from "@/actions/projectAction";
+import React from "react";
+import {
+  getProjectsByUserId,
+  getUserByUserName,
+} from "@/actions/projectAction";
 import { auth } from "@/lib/auth";
 import Link from "next/link";
 import Image from "next/image";
@@ -8,16 +10,19 @@ import { Button } from "@/components/ui/button";
 import { PlusCircle, Settings } from "lucide-react";
 import Project3DCard from "@/components/projects/Project3DCard";
 
-const User = async ({ params }: { params: Promise<{ id: string }> }) => {
+const page = async ({ params }: { params: Promise<{ userName: string }> }) => {
   const session = await auth();
-  const user = await getUserById((await params).id);
-  const projectsResponse = await getProjectsByUserId((await params).id);
+  const { userName } = await params;
+  const user = await getUserByUserName(userName);
 
   if (!user) {
     return <p className="text-center text-gray-500">User not found.</p>;
   }
 
-  const isOwnProfile = session?.user?.id === (await params).id;
+  // Fetch projects using user ID instead of username
+  const projectsResponse = await getProjectsByUserId(user.id);
+
+  const isOwnProfile = session?.user?.userName === userName;
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
@@ -59,11 +64,11 @@ const User = async ({ params }: { params: Promise<{ id: string }> }) => {
               <strong>567</strong> following
             </span>
           </div>
-          {/* <p className="text-sm">{user.bio || "No bio yet."}</p> */}
         </div>
       </div>
 
       {/* Projects Grid */}
+      <hr />
       <div className="mb-8">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">Projects</h2>
@@ -80,14 +85,12 @@ const User = async ({ params }: { params: Promise<{ id: string }> }) => {
           <ul className="mt-7 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-1 justify-center">
             {projectsResponse.success &&
             projectsResponse.projects.length > 0 ? (
-              projectsResponse.projects.map((project) => {
-                return (
-                  <Project3DCard
-                    key={project.id}
-                    project={{ ...project, id: project.id.toString() }}
-                  />
-                );
-              })
+              projectsResponse.projects.map((project) => (
+                <Project3DCard
+                  key={project.id}
+                  project={{ ...project, id: project.id.toString() }}
+                />
+              ))
             ) : (
               <p className="text-center text-gray-500">No projects found.</p>
             )}
@@ -98,4 +101,4 @@ const User = async ({ params }: { params: Promise<{ id: string }> }) => {
   );
 };
 
-export default User;
+export default page;

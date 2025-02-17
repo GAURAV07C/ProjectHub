@@ -5,46 +5,38 @@ import { z } from "zod";
 import { projectSchema } from "@/schemas/projectSchema";
 import { auth } from "@/lib/auth";
 
-export async function createProject(formData: FormData) {
+export async function createProject(values: z.infer<typeof projectSchema>) {
   try {
+    const validateFields = projectSchema.safeParse(values);
+
+    if (!validateFields.success) {
+      return { error: "Invalid fields!" };
+    }
+
+    const { category, description, imageurl, title, details } =
+      validateFields.data;
+
     // Fetch the user session
     const session = await auth();
 
     if (!session || !session.user) {
-      return { success: false, message: "User not authenticated" };
+      return { error: "User not authenticated" };
     }
 
-    // Extract userId from session
-    const userId = session.user.id;
+    const userId = session.user.id as string;
 
-    // Convert FormData to an object
-    const data = Object.fromEntries(formData.entries());
-
-    // Ensure field name consistency (`imageurl` → `imageUrl`)
-    const correctedData = {
-      ...data,
-      imageUrl: data.imageurl || "", // Ensure correct naming
-    };
-
-    // Validate the data using Zod schema
-    const validatedData = projectSchema.parse({
-      ...correctedData,
-      userId, // Inject userId from session
-    });
-
-    // Save project data to the database using Prisma
-    const project = await prisma.project.create({
+     await prisma.project.create({
       data: {
-        title: validatedData.title,
-        description: validatedData.description,
-        category: validatedData.category,
-        imageUrl: validatedData.imageurl, // Ensure correct field name
-        details: validatedData.details || null, // Optional field
-        userId: userId as string, // User ID from session
+        title: title,
+        category: category,
+        description: description,
+        imageUrl: imageurl,
+        details: details,
+        userId: userId,
       },
     });
 
-    return { success: true, project };
+    return { sucess: "Project created SucessFully" };
   } catch (error) {
     console.error("Error creating project:", error);
     return {
@@ -65,7 +57,7 @@ export const getUserById = async (userId: string) => {
         id: true,
         name: true,
         email: true,
-        image: true, // Include more fields if needed
+        image: true, 
       },
     });
 
@@ -79,6 +71,36 @@ export const getUserById = async (userId: string) => {
     return null;
   }
 };
+
+
+
+
+export const getUserByUserName = async (userName: string) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { userName },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        image: true,
+        userName:true,
+        
+      },
+    });
+
+    if (!user) {
+      return null;
+    }
+
+    return user;
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    return null;
+  }
+};
+
+
 
 export const getProjectsByUserId = async (userId: string) => {
   try {

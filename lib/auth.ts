@@ -24,9 +24,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   events: {
     async linkAccount({ user }) {
+      const email = user.email?.split("@")[0];
       await prisma.user.update({
         where: { id: user.id },
-        data: { emailVerified: new Date(), userName: user.email },
+        data: { emailVerified: new Date(), userName: email },
       });
     },
   },
@@ -55,20 +56,22 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.id = token.sub;
       }
 
-      // if (token.userName && session.user) {
-      //   session.user.userName = token.userName;
-      // }
+      if (token.userName && session.user) {
+        session.user.userName = token.userName;
+      }
       return session;
     },
 
     async jwt({ token }) {
-      // if (!token.sub) return token;
+      if (!token.sub) return token;
 
-      // const existingUser = await getUserById(token.sub);
+      const existingUser = await getUserById(token.sub);
 
-      // if (!existingUser) return token;
+      if (!existingUser) return token;
 
-      // token.userName = existingUser.userName;
+      if (existingUser.userName !== null) {
+        token.userName = existingUser.userName;
+      }
 
       return token;
     },

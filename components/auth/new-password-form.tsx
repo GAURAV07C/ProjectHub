@@ -13,7 +13,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useState, useTransition } from "react";
+import { Suspense, useState, useTransition } from "react";
 import CardWrapper from "@/components/auth/card-wrapper";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -22,6 +22,14 @@ import FormSucess from "@/components/form-sucess";
 import { newPassword } from "@/actions/new-password";
 
 const NewPasswordForm = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <NewPasswordFormContent />
+    </Suspense>
+  );
+};
+
+const NewPasswordFormContent = () => {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
   const [error, setError] = useState<string | undefined>("");

@@ -1,9 +1,9 @@
 import Image from "next/image";
 import React from "react";
-import { Carprismaody, CardContainer, CardItem } from "./ui/3d-card";
+import { Carprismaody, CardContainer, CardItem } from "@/components/ui/3d-card";
 import Link from "next/link";
 import { auth } from "@/lib/auth";
-import DeleteButton from "./DeleteButton";
+import DeleteButton from "@/components/projects/DeleteButton";
 
 const Project3DCard = async ({
   project,
