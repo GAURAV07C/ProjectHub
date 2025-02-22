@@ -56,7 +56,7 @@ const ProjectForm = () => {
   };
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
+    <Card className="w-full max-w-5xl mx-auto px-">
       <CardHeader>
         <CardTitle className="text-2xl font-bold text-center">
           Create New Project

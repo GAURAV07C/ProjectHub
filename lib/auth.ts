@@ -59,6 +59,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (token.userName && session.user) {
         session.user.userName = token.userName;
       }
+      if (token.bio && session.user) {
+        session.user.bio = token.bio;
+      }
+
+      if (token._count && session.user) {
+        session.user._count = token._count;
+      }
+
       return session;
     },
 
@@ -71,6 +79,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
       if (existingUser.userName !== null) {
         token.userName = existingUser.userName;
+      }
+
+      if (existingUser.bio !== null) {
+        token.bio = existingUser.bio;
+      }
+
+      if (existingUser._count !== null) {
+        token._count = existingUser._count;
       }
 
       return token;

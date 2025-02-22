@@ -32,7 +32,7 @@ const ResetForm = () => {
   });
 
   const onSubmit = (values: z.infer<typeof ResetSchema>) => {
-    console.log(values)
+ 
     setError("");
     setSucess("");
 

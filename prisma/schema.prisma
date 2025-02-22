@@ -14,12 +14,23 @@ model User {
   userName      String?   @unique
   image         String?
   password      String?
+  bio           String?
+  location      String?
+  website       String?
   createdAt     DateTime  @default(now())
   emailVerified DateTime?
   updatedAt     DateTime  @updatedAt
   accounts      Account[]
 
-  projects Project[]
+  projects Project[] // one-to-many
+  comments Comment[] // one-to-many
+  likes    Like[] // one-to-many
+
+  followers Follows[] @relation("following") // users who follow this user
+  following Follows[] @relation("follower") // users this user follows
+
+  notifications        Notification[] @relation("userNotifications") // notifications received by a user
+  notificationsCreated Notification[] @relation("notificationCreator") // notifications triggered by a user
 }
 
 model Account {
@@ -61,14 +72,90 @@ model PasswordResetToken {
 }
 
 model Project {
-  id          Int      @id @default(autoincrement())
+  id          String   @id @default(cuid())
   title       String
   description String
   category    String
   imageUrl    String
   details     String?
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
+  authorId    String
+  author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade) // cascade deleted means delete all project if user is deleted
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  comments Comment[] // one-to-many
+  likes    Like[] // one-to-many
+
+  notifications Notification[]
+}
+
+model Comment {
+  id        String @id @default(cuid())
+  content   String
+  authorId  String
+  projectId String
+
+  cretedAt DateTime @default(now())
+
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  project      Project        @relation(fields: [projectId], onDelete: Cascade, references: [id])
+  Notification Notification[]
+
+  @@index([authorId, projectId]) // composite index for faster queries
+}
+
+model Like {
+  id String @id @default(cuid())
+
+  userId    String
+  projectId String
+
+  cretedAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  project Project @relation(fields: [projectId], onDelete: Cascade, references: [id])
+
+  @@unique([userId, projectId]) //same user can not like twice 
+  @@index([userId, projectId]) // composite index for faster queries
+}
+
+model Follows {
+  followerId  String
+  followingId String
+  createdAt   DateTime @default(now())
+
+  // Relations
+  follower  User @relation("follower", fields: [followerId], references: [id], onDelete: Cascade)
+  following User @relation("following", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@id([followerId, followingId]) // composite primary key prevents duplicate follows
+  @@index([followerId, followingId]) // composite index for faster queries
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  creatorId String
+  type      NotificationType
+  read      Boolean          @default(false)
+  projectId String?
+  commentId String?
+  createdAt DateTime         @default(now())
+
+  // Relations
+  user User @relation("userNotifications", fields: [userId], references: [id], onDelete: Cascade)
+
+  creator  User     @relation("notificationCreator", fields: [creatorId], references: [id], onDelete: Cascade)
+  poroject Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  comment  Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+enum NotificationType {
+  LIKE
+  COMMENT
+  FOLLOW
 }

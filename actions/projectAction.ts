@@ -32,7 +32,7 @@ export async function createProject(values: z.infer<typeof projectSchema>) {
         description: description,
         imageUrl: imageurl,
         details: details,
-        userId: userId,
+        authorId: userId,
       },
     });
 
@@ -53,11 +53,13 @@ export const getUserById = async (userId: string) => {
   try {
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        image: true, 
+      include: {
+        _count: {
+          select: {
+            followers: true,
+            following: true,
+          },
+        },
       },
     });
 
@@ -79,13 +81,13 @@ export const getUserByUserName = async (userName: string) => {
   try {
     const user = await prisma.user.findUnique({
       where: { userName },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        image: true,
-        userName:true,
-        
+      include: {
+        _count: {
+          select: {
+            followers: true,
+            following: true,
+          },
+        },
       },
     });
 
@@ -102,16 +104,16 @@ export const getUserByUserName = async (userName: string) => {
 
 
 
-export const getProjectsByUserId = async (userId: string) => {
+export const getProjectsByUserId = async (authorId: string) => {
   try {
     const projects = await prisma.project.findMany({
-      where: { userId },
+      where: { authorId },
       select: {
         id: true,
         title: true,
         description: true,
         imageUrl: true, // Include more fields if needed,
-        userId: true,
+        authorId: true,
       },
     });
 
@@ -131,7 +133,7 @@ export const getProjectsByUserId = async (userId: string) => {
 export const getProjectById = async (projectId: string) => {
   try {
     const project = await prisma.project.findUnique({
-      where: { id: Number(projectId) },
+      where: { id: projectId },
       select: {
         id: true,
         title: true,
@@ -140,12 +142,13 @@ export const getProjectById = async (projectId: string) => {
         details: true,
         category: true,
         createdAt: true,
-        user: {
+        author: {
           select: {
             id: true,
             name: true,
 
             image: true,
+            bio: true,
           },
         },
       },
@@ -159,10 +162,10 @@ export const getProjectById = async (projectId: string) => {
       success: true,
       project: {
         ...project,
-        authorId: project.user.id,
-        authorName: project.user.name,
+        authorId: project.author.id,
+        authorName: project.author.name,
 
-        authorImage: project.user.image || "/default-avatar.png",
+        authorImage: project.author.image || "/default-avatar.png",
       },
     };
   } catch (error) {
@@ -178,19 +181,19 @@ export const deleteProjects = async (projectId: string) => {
   }
 
   const project = await prisma.project.findUnique({
-    where: { id: Number(projectId) },
+    where: { id: projectId },
   });
 
   if (!project) {
     return { success: false, message: "Project not found" };
   }
 
-  if (project.userId !== session.user?.id) {
+  if (project.authorId !== session.user?.id) {
     return { success: false, message: "Not allowed" };
   }
 
   await prisma.project.delete({
-    where: { id: Number(projectId) },
+    where: { id: projectId },
   });
 
   return { success: true, message: "Project deleted successfully" };
