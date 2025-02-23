@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma"; // Import Prisma instance
 import { z } from "zod";
 import { projectSchema } from "@/schemas/projectSchema";
 import { auth } from "@/lib/auth";
+import { revalidatePath } from "next/cache";
 
 export async function createProject(values: z.infer<typeof projectSchema>) {
   try {
@@ -13,7 +14,7 @@ export async function createProject(values: z.infer<typeof projectSchema>) {
       return { error: "Invalid fields!" };
     }
 
-    const { category, description, imageurl, title, details } =
+    const { category, description, imageurl, title, details, Link } =
       validateFields.data;
 
     // Fetch the user session
@@ -25,7 +26,7 @@ export async function createProject(values: z.infer<typeof projectSchema>) {
 
     const userId = session.user.id as string;
 
-     await prisma.project.create({
+    await prisma.project.create({
       data: {
         title: title,
         category: category,
@@ -33,6 +34,7 @@ export async function createProject(values: z.infer<typeof projectSchema>) {
         imageUrl: imageurl,
         details: details,
         authorId: userId,
+        Link: Link,
       },
     });
 
@@ -74,9 +76,6 @@ export const getUserById = async (userId: string) => {
   }
 };
 
-
-
-
 export const getUserByUserName = async (userName: string) => {
   try {
     const user = await prisma.user.findUnique({
@@ -101,8 +100,6 @@ export const getUserByUserName = async (userName: string) => {
     return null;
   }
 };
-
-
 
 export const getProjectsByUserId = async (authorId: string) => {
   try {
@@ -197,4 +194,158 @@ export const deleteProjects = async (projectId: string) => {
   });
 
   return { success: true, message: "Project deleted successfully" };
+};
+
+export const getProjects = async () => {
+  try {
+    const projects = await prisma.project.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+            userName: true,
+          },
+        },
+        comments: {
+          include: {
+            author: {
+              select: {
+                id: true,
+                name: true,
+                image: true,
+                userName: true,
+              },
+            },
+          },
+          orderBy: {
+            createdAt: "asc",
+          },
+        },
+        likes: {
+          select: {
+            userId: true,
+          },
+        },
+        _count: {
+          select: {
+            comments: true,
+            likes: true,
+          },
+        },
+      },
+    });
+
+    return projects;
+  } catch (error) {
+    console.error("Error fetching projects:", error);
+    return []; // Ensure return is always an array
+  }
+};
+
+export const toggleLike = async (projectId: string, userId: string) => {
+  try {
+    const existingLike = await prisma.like.findUnique({
+      where: {
+        userId_projectId: {
+          userId,
+          projectId,
+        },
+      },
+    });
+
+    const project = await prisma.project.findUnique({
+      where: { id: projectId },
+      select: { authorId: true },
+    });
+
+    if (existingLike) {
+      await prisma.like.delete({
+        where: {
+          userId_projectId: {
+            userId,
+            projectId,
+          },
+        },
+      });
+    } else {
+      await prisma.$transaction([
+        prisma.like.create({
+          data: {
+            userId,
+            projectId,
+          },
+        }),
+        ...(project?.authorId === userId
+          ? [
+              prisma.notification.create({
+                data: {
+                  type: "LIKE",
+                  userId: project.authorId,
+                  creatorId: userId,
+                  projectId,
+                },
+              }),
+            ]
+          : []),
+      ]);
+    }
+
+    revalidatePath("/feed");
+
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to toggle like ");
+    return { success: false, error };
+  }
+};
+
+export const createComment = async (
+  projectId: string,
+  content: string,
+  userId: string
+) => {
+  try {
+    const project = await prisma.project.findUnique({
+      where: { id: projectId },
+      select: { authorId: true },
+    });
+
+    if (!project) throw new Error("Project not found");
+
+    const [comment] = await prisma.$transaction(async (tx) => {
+      const newComment = await tx.comment.create({
+        data: {
+          content,
+          authorId: userId,
+          projectId,
+        },
+      });
+
+      if (project.authorId !== userId) {
+        await tx.notification.create({
+          data: {
+            type: "COMMENT",
+            userId: project.authorId,
+            creatorId: userId,
+            projectId,
+            commentId: newComment.id,
+          },
+        });
+      }
+
+      return [newComment];
+    });
+
+    revalidatePath("/feed");
+
+    return { success: true, comment };
+  } catch (error) {
+    console.error("Failed to create comment:", error);
+    return { success: false, error: "Failed to create comment" };
+  }
 };

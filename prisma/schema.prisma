@@ -79,6 +79,7 @@ model Project {
   imageUrl    String
   details     String?
   authorId    String
+  Link       String?
   author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade) // cascade deleted means delete all project if user is deleted
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -95,7 +96,7 @@ model Comment {
   authorId  String
   projectId String
 
-  cretedAt DateTime @default(now())
+  createdAt DateTime @default(now())
 
   author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
 

@@ -1,6 +1,6 @@
 import { z } from "zod";
  
-export const  projectSchema = z.object({
+export const projectSchema = z.object({
   title: z
     .string()
     .min(3, { message: "Title must be at least 3 characters long" }),
@@ -13,4 +13,8 @@ export const  projectSchema = z.object({
     .min(1, { message: "Image URL is required" })
     .url({ message: "Invalid URL format" }),
   details: z.string().optional(), // Allow empty details
+  Link: z
+    .string()
+    .url({ message: "Invalid URL format" })
+    .min(1, { message: "Link is required" }),
 });

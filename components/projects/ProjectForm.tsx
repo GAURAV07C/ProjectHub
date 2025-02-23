@@ -37,6 +37,7 @@ const ProjectForm = () => {
       details: "",
       imageurl: "",
       title: "",
+      Link:"",
     },
   });
 
@@ -151,6 +152,27 @@ const ProjectForm = () => {
                   )}
                 />
               </div>
+
+              <FormField
+                control={form.control}
+                name="Link"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-lg font-semibold">
+                      Link to the project
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        disabled={isPending}
+                        placeholder="Live project link"
+                        className="input-field"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
               <FormField
                 control={form.control}
