@@ -1,56 +1,72 @@
-# prisma , rate limiting , open api docs , testing , setup eslint , pretier , husky, shadcn ui ,  next-auth , Graph Ql
+# 🚀 Project Hub | A Platform for College Students to Share Projects
 
-<h2>
-NEXT.js Version 15 React 19 :</h2>
+## 🌐 Live Demo
 
-Next js is the a Reat framWork for Web
+🔗 [View Project Hub Live](https://project-hub-rho.vercel.app/)
 
-What is I'll get?
-
-All basic concept & Theory
-Authentication
-Sanity
-API Fetching
-Real-Time Searching
-Server Side Rendering
-Performance & Bug Tracking
-Deployment
-ISR
-Server Side Rendering
-Pre Rendering
-Parcel re-Rendering
-Parallel Fetching
-SEO
-API Routing
-Routes Group
-Layout
-Dynamic Routes
-
-<div>
-    <h2>Features Of Next Js ? </h2>
-Here's What it does in simple term:
-<ul>
-<li>Fast Website </li>
-<li>Special Delivery </li>
-<li>All in One  </li>
-<li>Great For Search Engines </li>
-<li>Developer's Best Friend </li>
-</ul>
-</div>
-
-<>
-
-## SSG
-
-when we deploy next js application then its render html page and its save in server ,, when user acess the site then next js direclty give that file to user .. performance increase  .. it is only for static page 
-
-## SSR
-user reuest for content 
+## 📸 Screenshot
+<img width="959" height="500" alt="image" src="https://github.com/user-attachments/assets/b6210fc5-a986-44e5-9ff0-77620895cb53" />
 
 
-## ISR
-extension of ssg, 1:52
 
-## PPR
+## 📖 About
 
-</>
+Project Hub is a platform designed for **college students** to **upload, showcase, and collaborate** on projects. It enables students to get feedback, discover new ideas, and enhance their learning experience.
+
+## 🛠️ Tech Stack
+
+- **Frontend & Backend:** Next.js
+- **Database:** PostgreSQL
+- **Authentication:** NextAuth (GitHub, Google, Email)
+- **Security:** Two-Factor Authentication (2FA)
+
+## 📌 Features
+
+✅ User authentication (GitHub, Google, Email)\
+✅ Two-Factor Authentication (2FA) for enhanced security\
+✅ Upload & showcase projects with descriptions\
+✅ Like and comment on projects\
+✅ Discover and collaborate with other students
+
+## 🚀 Getting Started
+
+1. **Clone the repository:**
+
+   ```bash
+   git clone https://github.com/GAURAV07C/ProjectHub.git
+   ```
+
+2. **Navigate to the project folder:**
+
+   ```bash
+   cd ProjectHub
+   ```
+
+3. **Install dependencies:**
+
+   ```bash
+   npm install
+   ```
+
+4. **Set up environment variables:** Create a `.env` file in the root directory and add the required environment variables.
+
+5. **Run database migrations (if applicable):**
+
+   ```bash
+   npx prisma migrate dev
+   ```
+
+6. **Run the development server:**
+
+   ```bash
+   npm run dev
+   ```
+
+## 🤝 Contributing
+
+Have suggestions or want to contribute? Feel free to fork the repo, create a pull request, or submit an issue!
+
+---
+
+📩 **Need help?** Reach out to me on [LinkedIn](https://www.linkedin.com/in/gaurav07c/) | [Twitter](https://x.com/gaurav07c)
+
