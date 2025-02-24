@@ -43,12 +43,14 @@ const DesktopNavbar: React.FC<DesktopNavbarProps> = ({ session, user }) => {
             </Link>
           </Button>
           <div className="flex items-center space-x-4">
-            <div className="relative w-8 h-8 overflow-hidden rounded-full border-2 border-white">
-              <Avatar className="h-16 w-16 ">
+            <div className=" border-2 border-white rounded-full">
+              <Avatar className="h-8 w-8 ">
                 <AvatarImage
                   src={
-                    user?.image ??
-                    `https://api.dicebear.com/5.x/initials/svg?seed=${user?.name}&fontSize=100&bold=true `
+                    user.image ??
+                    `https://api.dicebear.com/5.x/initials/svg?seed=${encodeURIComponent(
+                      user.name ?? ""
+                    )}`
                   }
                 />
               </Avatar>
