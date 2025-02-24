@@ -77,7 +77,9 @@ const ProjectCard = ({
           <div className="flex items-center space-x-4">
             <Link href={project.author.userName || ""}>
               <Avatar className="h-12 w-12 border-2 border-primary/10">
-                <AvatarImage src={project.author.image ?? "/placeholder.svg"} />
+                <AvatarImage src={project.author.image ?? `https://api.dicebear.com/5.x/initials/svg?seed=${encodeURIComponent(
+                     project.author.name ?? ""
+                   )}`} />
               </Avatar>
             </Link>
             <div className="flex-1">
@@ -110,7 +112,7 @@ const ProjectCard = ({
               <CardItem className="w-full">
                 <div className="relative aspect-video w-full overflow-hidden rounded-lg">
                   <Image
-                    src={project.imageUrl || "/placeholder.svg"}
+                    src={project.imageUrl || ""}
                     alt={project.title}
                     fill
                     className="object-cover w-36 h-36"
@@ -183,7 +185,9 @@ const ProjectCard = ({
                     <div key={comment.id} className="flex gap-3">
                       <Avatar className="h-8 w-8">
                         <AvatarImage
-                          src={comment.author?.image ?? "/placeholder.svg"}
+                          src={comment.author?.image ?? `https://api.dicebear.com/5.x/initials/svg?seed=${encodeURIComponent(
+                            comment.author?.name ?? ""
+                          )}`}
                         />
                       </Avatar>
                       <div className="flex-1">

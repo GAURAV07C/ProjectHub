@@ -162,7 +162,9 @@ export const getProjectById = async (projectId: string) => {
         authorId: project.author.id,
         authorName: project.author.name,
 
-        authorImage: project.author.image || "/default-avatar.png",
+        authorImage:
+          project.author.image ??
+          `https://api.dicebear.com/5.x/initials/svg?seed=${project.author.name}`,
       },
     };
   } catch (error) {

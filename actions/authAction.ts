@@ -67,10 +67,18 @@ export const login = async (values: z.infer<typeof LoginSchema>) => {
 export const register = async (values: z.infer<typeof RegisterSchema>) => {
   const validateFields = RegisterSchema.safeParse(values);
 
+
+  
+
   if (!validateFields.success) {
     return { error: "Invalid fields!" };
   }
-  const { email, password, name } = validateFields.data;
+  const { email, password, name,  } = validateFields.data;
+
+
+  //  const defaultImage = `https://api.dicebear.com/5.x/initials/svg?seed=${encodeURIComponent(
+  //    name
+  //  )}`;
 
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
@@ -88,7 +96,9 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
       name: name,
       email: email,
       password: hashedPassword,
-      userName: userName || ""
+      userName: userName || "",
+    
+      
     },
   });
 

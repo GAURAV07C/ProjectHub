@@ -7,6 +7,7 @@ import { auth } from "@/lib/auth";
 import { LinkIcon, MapPinIcon } from "lucide-react";
 
 const Sidebar = async () => {
+  
   const session = await auth();
   const user = session?.user;
   return (
@@ -19,7 +20,14 @@ const Sidebar = async () => {
               className="flex flex-col items-center justify-center"
             >
               <Avatar className="w-20 h-20 border-2 ">
-                <AvatarImage src={user?.image || "/placeholder.svg"} />
+                <AvatarImage
+                  src={
+                    user?.image ||
+                    `https://api.dicebear.com/5.x/initials/svg?seed=${encodeURIComponent(
+                      session?.user?.name || "User"
+                    )}`
+                  }
+                />
               </Avatar>
 
               <div className="mt-4 space-y-1">
@@ -30,10 +38,8 @@ const Sidebar = async () => {
               </div>
             </Link>
 
-            { user?.bio && (
-              <p className="mt-3 text-sm text-muted-foreground">
-                {user?.bio }
-              </p>
+            {user?.bio && (
+              <p className="mt-3 text-sm text-muted-foreground">{user?.bio}</p>
             )}
 
             <div className="w-full">

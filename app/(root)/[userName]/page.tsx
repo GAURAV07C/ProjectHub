@@ -29,7 +29,7 @@ const page = async ({ params }: { params: Promise<{ userName: string }> }) => {
       {/* Profile Header */}
       <div className="flex flex-col md:flex-row items-center md:items-start mb-8">
         <Image
-          src={user.image || "/placeholder.svg"}
+          src={user.image  || `https://api.dicebear.com/5.x/initials/svg?seed=${user.name}`}
           alt={user.name || "User"}
           width={150}
           height={150}

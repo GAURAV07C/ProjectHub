@@ -34,6 +34,11 @@ export default auth((req) => {
     return Response.redirect(new URL("/auth/login", nextUrl));
   }
 
+  // 👇 Yeh condition add ki hai: Agar logged-in user "/" par jaye to /feed bhejo
+  if (isLoggedIn && nextUrl.pathname === "/") {
+    return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
+  }
+
   return;
 });
 

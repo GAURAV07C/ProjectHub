@@ -52,7 +52,7 @@ const ProjectPage = async ({ params }: { params: Promise<{ id: string }> }) => {
       <section className="max-w-5xl mx-auto px-4 py-12">
         <Card className="overflow-hidden shadow-xl">
           <Image
-            src={project.imageUrl || "/placeholder.png"}
+            src={project.imageUrl || "" }
             alt="Project Image"
             width={1200}
             height={675}

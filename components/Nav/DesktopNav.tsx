@@ -3,8 +3,9 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import ModeToggle from "@/components/ModeToggle";
 import { signOut } from "@/lib/auth";
-import Image from "next/image";
+
 import { Session } from "next-auth";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 
 interface DesktopNavbarProps {
   session: Session | null;
@@ -42,13 +43,15 @@ const DesktopNavbar: React.FC<DesktopNavbarProps> = ({ session, user }) => {
             </Link>
           </Button>
           <div className="flex items-center space-x-4">
-            <div className="relative w-4 h-4 overflow-hidden rounded-full border-2 border-white">
-              <Image
-                src={session?.user?.image || "/placeholder.svg"}
-                alt={session?.user?.name || "User"}
-                width={40}
-                height={40}
-              />
+            <div className="relative w-8 h-8 overflow-hidden rounded-full border-2 border-white">
+              <Avatar className="h-16 w-16 ">
+                <AvatarImage
+                  src={
+                    user?.image ??
+                    `https://api.dicebear.com/5.x/initials/svg?seed=${user?.name}&fontSize=100&bold=true `
+                  }
+                />
+              </Avatar>
             </div>
             <form
               action={async () => {
