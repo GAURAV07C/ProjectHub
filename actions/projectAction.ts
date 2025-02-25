@@ -51,81 +51,59 @@ export async function createProject(values: z.infer<typeof projectSchema>) {
   }
 }
 
-export const getUserById = async (userId: string) => {
-  try {
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      include: {
-        _count: {
-          select: {
-            followers: true,
-            following: true,
-          },
-        },
-      },
-    });
-
-    if (!user) {
-      return null;
-    }
-
-    return user;
-  } catch (error) {
-    console.error("Error fetching user:", error);
-    return null;
-  }
-};
-
-export const getUserByUserName = async (userName: string) => {
-  try {
-    const user = await prisma.user.findUnique({
-      where: { userName },
-      include: {
-        _count: {
-          select: {
-            followers: true,
-            following: true,
-          },
-        },
-      },
-    });
-
-    if (!user) {
-      return null;
-    }
-
-    return user;
-  } catch (error) {
-    console.error("Error fetching user:", error);
-    return null;
-  }
-};
-
-export const getProjectsByUserId = async (authorId: string) => {
+export async function getProjectsByUserId(userId: string) {
   try {
     const projects = await prisma.project.findMany({
-      where: { authorId },
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        imageUrl: true, // Include more fields if needed,
-        authorId: true,
+      where: {
+        authorId: userId,
+      },
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+            userName: true,
+            image: true,
+          },
+        },
+        comments: {
+          include: {
+            author: {
+              select: {
+                id: true,
+                name: true,
+                userName: true,
+                image: true,
+              },
+            },
+          },
+          orderBy: {
+            createdAt: "asc",
+          },
+        },
+        likes: {
+          select: {
+            userId: true,
+          },
+        },
+        _count: {
+          select: {
+            likes: true,
+            comments: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
       },
     });
 
-    return {
-      success: true,
-      projects,
-    };
+    return projects;
   } catch (error) {
-    console.error("Error fetching projects:", error);
-    return {
-      success: false,
-      projects: [],
-    };
+    console.error("Error fetching user projects:", error);
+    throw new Error("Failed to fetch user projects");
   }
-};
+}
 
 export const getProjectById = async (projectId: string) => {
   try {
@@ -351,3 +329,87 @@ export const createComment = async (
     return { success: false, error: "Failed to create comment" };
   }
 };
+
+export const deleteComment = async (commentId: string, userId: string) => {
+  try {
+    const comment = await prisma.comment.findUnique({
+      where: { id: commentId },
+      select: { authorId: true, projectId: true },
+    });
+
+    if (!comment) throw new Error("Comment not found");
+
+    if (comment.authorId !== userId) {
+      throw new Error("Unauthorized");
+    }
+
+    await prisma.comment.delete({
+      where: { id: commentId },
+    });
+
+    revalidatePath("/feed");
+
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to delete comment:", error);
+    return { success: false, error: "Failed to delete comment" };
+  }
+};
+
+export async function getUserLikedProjects(userId: string) {
+  try {
+    const likedprojects = await prisma.project.findMany({
+      where: {
+        likes: {
+          some: {
+            userId,
+          },
+        },
+      },
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+            userName: true,
+            image: true,
+          },
+        },
+        comments: {
+          include: {
+            author: {
+              select: {
+                id: true,
+                name: true,
+                userName: true,
+                image: true,
+              },
+            },
+          },
+          orderBy: {
+            createdAt: "asc",
+          },
+        },
+        likes: {
+          select: {
+            userId: true,
+          },
+        },
+        _count: {
+          select: {
+            likes: true,
+            comments: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return likedprojects;
+  } catch (error) {
+    console.error("Error fetching liked projects:", error);
+    throw new Error("Failed to fetch liked projects");
+  }
+}

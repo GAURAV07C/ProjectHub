@@ -9,10 +9,48 @@ export const getUserByEmail = async (email: string) => {
       where: {
         email: email,
       },
+      
     });
 
     return user;
   } catch {
+    return null;
+  }
+};
+
+
+
+export const getUserByUserName = async (userName: string) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { userName },
+      select: {
+        id: true,
+        bio: true,
+        name: true,
+        image: true,
+        userName: true,
+        location: true,
+        website: true,
+        email:true,
+        createdAt: true,
+        _count: {
+          select: {
+            followers: true,
+            following: true,
+            projects: true,
+          },
+        },
+      },
+    });
+
+    if (!user) {
+      return null;
+    }
+
+    return user;
+  } catch (error) {
+    console.error("Error fetching user:", error);
     return null;
   }
 };
@@ -123,3 +161,52 @@ export const toggleFollowButton = async (
 
   }
 };
+
+
+export async function updateProfile(formData: FormData , userId:string) {
+  try {
+   
+
+    const name = formData.get("name") as string;
+    const bio = formData.get("bio") as string;
+    const location = formData.get("location") as string;
+    const website = formData.get("website") as string;
+
+    const user = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        name,
+        bio,
+        location,
+        website,
+        
+      },
+    });
+
+    revalidatePath("/");
+    return { success: true, user };
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    return { success: false, error: "Failed to update profile" };
+  }
+}
+
+export async function isFollowing(targetUserId: string,userId: string) {
+  try {
+   
+
+    const follow = await prisma.follows.findUnique({
+      where: {
+        followerId_followingId: {
+          followerId: userId,
+          followingId: targetUserId,
+        },
+      },
+    });
+
+    return !!follow;
+  } catch (error) {
+    console.error("Error checking follow status:", error);
+    return false;
+  }
+}

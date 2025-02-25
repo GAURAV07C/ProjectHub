@@ -1,4 +1,4 @@
-import { BellIcon, HomeIcon, UserIcon, LogOut } from "lucide-react";
+import { BellIcon, HomeIcon, UserIcon, LogOut, PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import ModeToggle from "@/components/ModeToggle";
@@ -32,6 +32,12 @@ const DesktopNavbar: React.FC<DesktopNavbarProps> = ({ session, user }) => {
               <span className="hidden lg:inline">Notifications</span>
             </Link>
           </Button>
+          <Link href="/create">
+            <Button variant="ghost" size="sm">
+              <PlusCircle className="h-5 w-5 mr-2" />
+              Create Project
+            </Button>
+          </Link>
           <Button variant="ghost" className="flex items-center gap-2" asChild>
             <Link
               href={`/${
