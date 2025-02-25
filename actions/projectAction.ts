@@ -151,39 +151,35 @@ export const getProjectById = async (projectId: string) => {
   }
 };
 
-export const deleteProjects = async (projectId: string , userId:string) => {
-   try{
-  
-  if (!userId) {
-    return { success: false, message: "Unauthorized" };
-  }
-
-  const project = await prisma.project.findUnique({
-    where: { id: projectId },
-    select:{authorId:true}
-  });
-
-  if (!project) {
-    return { success: false, message: "Project not found" };
-  }
-
-  if (project.authorId !==   userId) {
-    return { success: false, message: "Not allowed" };
-
-   
-
-  } 
-
-  await prisma.project.delete({
-    where: { id: projectId },
-  });
-
-  return { success: true, message: "Project deleted successfully" };
-  } catch (error){
-        console.error("Failed to delete project:", error);
-    return { success: false, error: "Failed to delete project" };
+export const deleteProjects = async (projectId: string, userId: string) => {
+  try {
+    if (!userId) {
+      return { success: false, message: "Unauthorized" };
     }
-  
+
+    const project = await prisma.project.findUnique({
+      where: { id: projectId },
+      select: { authorId: true },
+    });
+
+    if (!project) {
+      return { success: false, message: "Project not found" };
+    }
+
+    if (project.authorId !== userId) {
+      return { success: false, message: "Not allowed" };
+    }
+
+    await prisma.project.delete({
+      where: { id: projectId },
+    });
+
+    revalidatePath("/feed");
+    return { success: true, message: "Project deleted successfully" };
+  } catch (error) {
+    console.error("Failed to delete project:", error);
+    return { success: false, error: "Failed to delete project" };
+  }
 };
 
 export const getProjects = async () => {
@@ -313,7 +309,6 @@ export const createComment = async (
           content,
           authorId: userId,
           projectId,
-          
         },
       });
 
