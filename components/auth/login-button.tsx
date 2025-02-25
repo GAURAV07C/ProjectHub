@@ -1,5 +1,6 @@
 'use client'
 
+import { useRouter } from 'next/navigation';
 import React from 'react'
 
 interface LoginButtonProps {
@@ -8,21 +9,25 @@ interface LoginButtonProps {
     asChild?: boolean
 }
 
+
 const LoginButton = ({
     children,
     mode='redirect',
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     asChild
 }:LoginButtonProps) => {
+   
+    const router = useRouter();
     const onClick = () => {
-        console.log("Login button ")
-    }
+      router.push("auth/login");
+      console.log("Login button ");
+    };
 
 
     if(mode === 'modal'){
         return (
             <span>
-                modal
+                {children}
             </span>
         )
     }
@@ -32,6 +37,7 @@ const LoginButton = ({
       {children}
     </span>
   );
+
 }
 
 export default LoginButton

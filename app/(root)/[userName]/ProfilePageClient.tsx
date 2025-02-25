@@ -39,6 +39,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import LoginButton from "@/components/auth/login-button";
 
 type User = Awaited<ReturnType<typeof getUserByUserName>>;
 type Projects = Awaited<ReturnType<typeof getProjectsByUserId>>;
@@ -162,13 +163,12 @@ const ProfilePageClient = ({
                 </div>
 
                 {/* "FOLLOW & EDIT PROFILE" BUTTONS */}
-                {!currentUser ? (
-                  // <SignInButton mode="modal">
-                  //   <Button className="w-full mt-4">Follow</Button>
-                  // </SignInButton>
-                  <div>
-                    <Button className="w-full mt-4">Follow</Button>
-                  </div>
+                {!currentUser.userName ? (
+                  <LoginButton >
+                   
+                      <Button className="w-full mt-4">Follow</Button>
+                   
+                  </LoginButton>
                 ) : isOwnedProfile ? (
                   <Button
                     className="w-full mt-4"
