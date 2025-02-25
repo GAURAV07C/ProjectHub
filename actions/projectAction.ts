@@ -151,29 +151,39 @@ export const getProjectById = async (projectId: string) => {
   }
 };
 
-export const deleteProjects = async (projectId: string) => {
-  const session = await auth();
-  if (!session) {
+export const deleteProjects = async (projectId: string , userId:string) => {
+   try{
+  
+  if (!userId) {
     return { success: false, message: "Unauthorized" };
   }
 
   const project = await prisma.project.findUnique({
     where: { id: projectId },
+    select:{authorId:true}
   });
 
   if (!project) {
     return { success: false, message: "Project not found" };
   }
 
-  if (project.authorId !== session.user?.id) {
+  if (project.authorId !==   userId) {
     return { success: false, message: "Not allowed" };
-  }
+
+   
+
+  } 
 
   await prisma.project.delete({
     where: { id: projectId },
   });
 
   return { success: true, message: "Project deleted successfully" };
+  } catch (error){
+        console.error("Failed to delete project:", error);
+    return { success: false, error: "Failed to delete project" };
+    }
+  
 };
 
 export const getProjects = async () => {
@@ -303,6 +313,7 @@ export const createComment = async (
           content,
           authorId: userId,
           projectId,
+          
         },
       });
 
@@ -337,22 +348,28 @@ export const deleteComment = async (commentId: string, userId: string) => {
       select: { authorId: true, projectId: true },
     });
 
-    if (!comment) throw new Error("Comment not found");
+    if (!comment) {
+      return { success: false, error: "Comment not found" };
+    }
 
     if (comment.authorId !== userId) {
-      throw new Error("Unauthorized");
+      return { success: false, error: "Unauthorized action" };
     }
 
     await prisma.comment.delete({
       where: { id: commentId },
     });
 
-    revalidatePath("/feed");
+    revalidatePath("/feed", "layout");
 
     return { success: true };
   } catch (error) {
     console.error("Failed to delete comment:", error);
-    return { success: false, error: "Failed to delete comment" };
+
+    return {
+      success: false,
+      error: (error as Error).message || "An unexpected error occurred",
+    };
   }
 };
 

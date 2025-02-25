@@ -11,7 +11,7 @@ import {
 
 import { getProjectsByUserId } from "@/actions/projectAction";
 
-import ProjectCard from "@/components/Feed/projectCard";
+import ProjectCard from "@/components/projects/projectCard";
 
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -251,6 +251,7 @@ const ProfilePageClient = ({
                     key={project.id}
                     project={project}
                     userId={user.id}
+                    currentUser={currentUser}
                   />
                 ))
               ) : (
@@ -269,6 +270,7 @@ const ProfilePageClient = ({
                     key={projects.id}
                     project={projects}
                     userId={user?.id}
+                    currentUser={currentUser}
                   />
                 ))
               ) : (

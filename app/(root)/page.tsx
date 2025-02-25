@@ -1,4 +1,4 @@
-import Project3DCard from "@/components/projects/Project3DCard";
+
 import SearchForm from "@/components/SearchForm";
 import { Boxes } from "@/components/ui/background-boxes";
 
@@ -25,63 +25,7 @@ const page = async () => {
 
       <section className="section_container">
         <p className="text-30-semibold">Trendy Project</p>
-        <ul className="mt-7 card_grid grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1 justify-center">
-          { [
-            {
-              id: "1",
-              title: "neew priject",
-              description: "this is a new project",
-            },
-            {
-              id: "2",
-              title: "neew priject",
-              description: "this is a new project",
-            },
-            {
-              id: "3",
-              title: "neew priject",
-              description: "this is a new project",
-            },
-            {
-              id: "4",
-              title: "neew priject",
-              description: "this is a new project",
-            },
-            {
-              id: "5",
-              title: "neew priject",
-              description: "this is a new project",
-            },
-            {
-              id: "6",
-              title: "neew priject",
-              description: "this is a new project",
-            },
-            {
-              id: "7",
-              title: "neew priject",
-              description: "this is a new project",
-            },
-            {
-              id: "8",
-              title: "neew priject",
-              description: "this is a new project",
-            },
-            {
-              id: "9",
-              title: "neew priject",
-              description: "this is a new project",
-            },
-            {
-              id: "10",
-              title: "neew priject",
-              description: "this is a new project",
-            },
-           
-          ].map((item) => (
-            <Project3DCard key={item.id} project={item}  />
-          ))}
-        </ul>
+        
       </section>
     </>
   );

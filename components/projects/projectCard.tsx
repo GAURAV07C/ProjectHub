@@ -3,8 +3,10 @@
 import { useState } from "react";
 import {
   createComment,
+  deleteProjects,
   type getProjects,
   toggleLike,
+  deleteComment,
 } from "@/actions/projectAction";
 import toast from "react-hot-toast";
 import { Card, CardContent } from "@/components/ui/card";
@@ -15,9 +17,20 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { formatDistanceToNow } from "date-fns";
 import { CardContainer, CardItem } from "@/components/ui/3d-card";
 import Image from "next/image";
-import { Heart, MessageCircle, ExternalLink } from "lucide-react";
+import {
+  Heart,
+  MessageCircle,
+  ExternalLink,
+  SendIcon,
+  Delete,
+} from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { motion } from "framer-motion";
+
+import { DeleteAlertDialog } from "@/components/projects/DeleteButton";
+import { getUserByUserName } from "@/data/user";
+
+type User = Awaited<ReturnType<typeof getUserByUserName>>;
 
 type Projects = Awaited<ReturnType<typeof getProjects>>;
 type Project = Projects[number];
@@ -25,9 +38,11 @@ type Project = Projects[number];
 const ProjectCard = ({
   project,
   userId,
+  currentUser,
 }: {
   project: Project;
   userId: string;
+  currentUser: NonNullable<User>;
 }) => {
   const [newComment, setNewComment] = useState("");
   const [isCommenting, setIsCommenting] = useState(false);
@@ -38,6 +53,9 @@ const ProjectCard = ({
     project.likes.some((like) => like.userId === userId)
   );
   const [optimisticLiked, setOptimisticLiked] = useState(project._count.likes);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const [isCommentDeleting, setIsCommentDeleting] = useState(false);
 
   const handleLike = async () => {
     if (isLiking) return;
@@ -70,6 +88,39 @@ const ProjectCard = ({
     }
   };
 
+  const handleCommentDelete = async (commentId: string) => {
+    if (isCommentDeleting) return;
+
+    try {
+      setIsCommentDeleting(true);
+      const result = await deleteComment(commentId, userId);
+      if (result?.success) {
+        toast.success("Comment deleted successfully");
+        // Ideally, update the UI state to remove the deleted comment
+      } else {
+        throw new Error(result.error);
+      }
+    } catch {
+      toast.error("Failed to delete comment");
+    } finally {
+      setIsCommentDeleting(false);
+    }
+  };
+
+  const handleDeleteProject = async () => {
+    if (isDeleting) return;
+    try {
+      setIsDeleting(true);
+      const result = await deleteProjects(project.id, userId);
+      if (result.success) toast.success("Project deleted successfully");
+      else throw new Error(result.error);
+    } catch {
+      toast.error("Failed to delete post");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardContent className="p-6">
@@ -77,9 +128,14 @@ const ProjectCard = ({
           <div className="flex items-center space-x-4">
             <Link href={project.author.userName || ""}>
               <Avatar className="h-12 w-12 border-2 border-primary/10">
-                <AvatarImage src={project.author.image ?? `https://api.dicebear.com/5.x/initials/svg?seed=${encodeURIComponent(
-                     project.author.name ?? ""
-                   )}`} />
+                <AvatarImage
+                  src={
+                    project.author.image ??
+                    `https://api.dicebear.com/5.x/initials/svg?seed=${encodeURIComponent(
+                      project.author.name ?? ""
+                    )}`
+                  }
+                />
               </Avatar>
             </Link>
             <div className="flex-1">
@@ -97,6 +153,12 @@ const ProjectCard = ({
                 </span>
               </div>
             </div>
+            {currentUser.id === project.author.id && (
+              <DeleteAlertDialog
+                isDeleting={isDeleting}
+                onDelete={handleDeleteProject}
+              />
+            )}
           </div>
 
           <CardContainer className="w-ful flex py-2 ">
@@ -177,17 +239,28 @@ const ProjectCard = ({
                     onClick={handleComment}
                     disabled={isCommenting || !newComment.trim()}
                   >
-                    Post
+                    {isCommenting ? (
+                      "Posting..."
+                    ) : (
+                      <>
+                        <SendIcon className="size-4" />
+                        Comment
+                      </>
+                    )}
                   </Button>
                 </div>
+
                 <div className="h-[200px] overflow-y-auto space-y-4">
                   {project.comments?.map((comment) => (
                     <div key={comment.id} className="flex gap-3">
                       <Avatar className="h-8 w-8">
                         <AvatarImage
-                          src={comment.author?.image ?? `https://api.dicebear.com/5.x/initials/svg?seed=${encodeURIComponent(
-                            comment.author?.name ?? ""
-                          )}`}
+                          src={
+                            comment.author?.image ??
+                            `https://api.dicebear.com/5.x/initials/svg?seed=${encodeURIComponent(
+                              comment.author?.name ?? ""
+                            )}`
+                          }
                         />
                       </Avatar>
                       <div className="flex-1">
@@ -195,13 +268,23 @@ const ProjectCard = ({
                           {comment.author?.name}
                         </span>{" "}
                         <span className="text-sm text-muted-foreground">
-                          @{comment.author?.userName} {" "}
+                          @{comment.author?.userName}{" "}
                         </span>{" "}
                         <span className="text-sm text-muted-foreground">
                           {formatDistanceToNow(new Date(comment.createdAt))} ago
                         </span>
                         <p className="text-sm">{comment.content}</p>
                       </div>
+                      {comment.authorId === userId && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleCommentDelete(comment.id)}
+                          disabled={isCommentDeleting}
+                        >
+                          <Delete className="h-4 w-4 text-red-500" />
+                        </Button>
+                      )}
                     </div>
                   ))}
                 </div>
