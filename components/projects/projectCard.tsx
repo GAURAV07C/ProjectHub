@@ -167,7 +167,7 @@ const ProjectCard = ({
                 <h2 className="text-xl font-bold">{project.title}</h2>
               </CardItem>
               <CardItem>
-                <p className="text-muted-foreground text-lg py-1">
+                <p className="text-muted-foreground text-sm py-1 line-clamp-2">
                   {project.description}
                 </p>
               </CardItem>
