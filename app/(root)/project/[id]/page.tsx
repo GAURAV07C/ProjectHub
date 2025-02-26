@@ -25,7 +25,7 @@ const ProjectPage = async ({ params }: { params: Promise<{ id: string }> }) => {
   const project = response.project;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-100 to-white">
+    <div className="min-h-screen  to-white">
       {/* Hero Section */}
       <div className="relative h-[70vh] w-full overflow-hidden bg-slate-900 flex flex-col items-center justify-center">
         <div className="absolute inset-0 w-full h-full z-20 [mask-image:radial-gradient(transparent,white)] pointer-events-none" />

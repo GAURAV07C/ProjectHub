@@ -35,7 +35,7 @@ export default auth((req) => {
     return;
   }
 
-  if (!isLoggedIn && !isPublicRoute) {
+  if (!isLoggedIn && (nextUrl.pathname === "/feed" || !isPublicRoute)) {
     return Response.redirect(new URL("/auth/login", nextUrl));
   }
 
