@@ -44,7 +44,7 @@ export default function RootLayout({
           >
             <NavBar />
 
-            <div className="lg:col-span-9">{children}</div>
+            <div className="lg:col-span-9 md:py-0 py-12">{children}</div>
           </div>
           <Toaster />
         </ThemeProvider>
