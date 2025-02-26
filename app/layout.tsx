@@ -36,7 +36,12 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="min-h-screen">
+          <div
+            className="min-h-screen
+           
+            "
+            // flex flex-col-reverse md:flex-col
+          >
             <NavBar />
 
             <div className="lg:col-span-9">{children}</div>

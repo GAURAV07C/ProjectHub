@@ -1,27 +1,12 @@
 "use client";
-
-import {
-  BellIcon,
-  HomeIcon,
-  LogOutIcon,
-  MenuIcon,
-  MoonIcon,
-  SunIcon,
-  UserIcon,
-} from "lucide-react";
+import { BellIcon, HomeIcon, PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import { useState } from "react";
-import { useTheme } from "next-themes";
 import Link from "next/link";
+import ModeToggle from "@/components/ModeToggle";
+
 import { Session } from "next-auth";
-import { signOut } from "next-auth/react";
+
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 
 interface MobileNavbarProps {
   session: Session | null;
@@ -29,92 +14,66 @@ interface MobileNavbarProps {
 }
 
 const MobileNavbar: React.FC<MobileNavbarProps> = ({ session, user }) => {
-  const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const { theme, setTheme } = useTheme();
+  return user ? (
+    <div className=" flex md:hidden lg:hidden items-center justify-between w-full px-4 py-2">
+      {/* Flex container for equal spacing */}
+      <div className="flex items-center justify-between w-full max-w-[400px] mx-auto">
+        {/* Left Side - Theme Toggle */}
+        <ModeToggle />
 
-  return (
-    <div className="flex md:hidden items-center space-x-2">
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-        className="mr-2"
-      >
-        <SunIcon className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-        <MoonIcon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-        <span className="sr-only">Toggle theme</span>
-      </Button>
+        {/* Center Icons */}
+        <Button variant="ghost" className="flex items-center" asChild>
+          <Link href="/">
+            <HomeIcon className="w-6 h-6" />
+          </Link>
+        </Button>
 
-      <Sheet open={showMobileMenu} onOpenChange={setShowMobileMenu}>
-        <SheetTrigger asChild>
-          <Button variant="ghost" size="icon">
-            <MenuIcon className="h-5 w-5" />
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="right" className="w-[300px]">
-          <SheetHeader>
-            <SheetTitle>Menu</SheetTitle>
-          </SheetHeader>
-          <nav className="flex flex-col space-y-4 mt-6">
-            <Button
-              variant="ghost"
-              className="flex items-center gap-3 justify-start"
-              asChild
-            >
-              <Link href="/">
-                <HomeIcon className="w-4 h-4" />
-                Home
-              </Link>
-            </Button>
+        <Button variant="ghost" className="flex items-center" asChild>
+          <Link href="/notifications">
+            <BellIcon className="w-6 h-6" />
+          </Link>
+        </Button>
 
-            {user ? (
-              <>
-                <Button
-                  variant="ghost"
-                  className="flex items-center gap-3 justify-start"
-                  asChild
-                >
-                  <Link href="/notifications">
-                    <BellIcon className="w-4 h-4" />
-                    Notifications
-                  </Link>
-                </Button>
-                <Button
-                  variant="ghost"
-                  className="flex items-center gap-3 justify-start"
-                  asChild
-                >
-                  <Link
-                    href={`/${
-                      session?.user?.userName ??
-                      session?.user?.email?.split("@")[0]
-                    }`}
-                  >
-                    <UserIcon className="w-4 h-4" />
-                    Profile
-                  </Link>
-                </Button>
-                <Button
-                  variant="ghost"
-                  className="flex items-center gap-3 justify-start w-full"
-                  onClick={async () => {
-                    await signOut({ redirectTo: "/" });
-                  }}
-                >
-                  <LogOutIcon className="w-4 h-4" />
-                  Logout
-                </Button>
-              </>
-            ) : (
-              <Link href="/auth/login">
-                <Button variant="default" className="w-full">
-                  Sign In
-                </Button>
-              </Link>
-            )}
-          </nav>
-        </SheetContent>
-      </Sheet>
+        <Button variant="ghost" className="flex items-center" asChild>
+          <Link href="/create">
+            <PlusCircle className="w-6 h-6" />
+          </Link>
+        </Button>
+
+        {/* Right Side - Profile Icon */}
+        <Button variant="ghost" className="flex items-center" asChild>
+          <Link
+            href={`/${
+              session?.user?.userName ?? session?.user?.email?.split("@")[0]
+            }`}
+          >
+            <Avatar className="h-8 w-8 border-2 border-gray-300 dark:border-gray-700">
+              <AvatarImage
+                src={
+                  user?.image ??
+                  `https://api.dicebear.com/5.x/initials/svg?seed=${encodeURIComponent(
+                    user?.name ?? "U"
+                  )}`
+                }
+                alt="User Profile"
+              />
+            </Avatar>
+          </Link>
+        </Button>
+      </div>
+    </div>
+  ) : (
+    <div className="visible md:hidden lg:hidden flex space-x-4">
+      <Link href="/auth/login">
+        <Button className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-semibold shadow-md">
+          Sign In
+        </Button>
+      </Link>
+      <Link href="/auth/signup">
+        <Button className="bg-green-400 hover:bg-green-500 text-gray-900 font-semibold shadow-md">
+          Sign Up
+        </Button>
+      </Link>
     </div>
   );
 };

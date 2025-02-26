@@ -5,7 +5,6 @@ import ModeToggle from "@/components/ModeToggle";
 import { signOut } from "@/lib/auth";
 
 import { Session } from "next-auth";
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
 
 interface DesktopNavbarProps {
   session: Session | null;
@@ -14,7 +13,7 @@ interface DesktopNavbarProps {
 
 const DesktopNavbar: React.FC<DesktopNavbarProps> = ({ session, user }) => {
   return (
-    <div className="hidden md:flex items-center space-x-4">
+    <div className="hidden md:flex  items-center space-x-4">
       <ModeToggle />
 
       <Button variant="ghost" className="flex items-center gap-2" asChild>
@@ -34,8 +33,8 @@ const DesktopNavbar: React.FC<DesktopNavbarProps> = ({ session, user }) => {
           </Button>
           <Link href="/create">
             <Button variant="ghost" size="sm">
-              <PlusCircle className="h-5 w-5 mr-2" />
-              Create Project
+              <PlusCircle className="  h-5 w-5 mr-2" />
+              <span className="hidden lg:inline">Create Project</span>
             </Button>
           </Link>
           <Button variant="ghost" className="flex items-center gap-2" asChild>
@@ -48,19 +47,9 @@ const DesktopNavbar: React.FC<DesktopNavbarProps> = ({ session, user }) => {
               <span className="hidden lg:inline">Profile</span>
             </Link>
           </Button>
+
           <div className="flex items-center space-x-4">
-            <div className=" border-2 border-white rounded-full">
-              <Avatar className="h-8 w-8 ">
-                <AvatarImage
-                  src={
-                    user.image ??
-                    `https://api.dicebear.com/5.x/initials/svg?seed=${encodeURIComponent(
-                      user.name ?? ""
-                    )}`
-                  }
-                />
-              </Avatar>
-            </div>
+            <div className=""></div>
             <form
               action={async () => {
                 "use server";
