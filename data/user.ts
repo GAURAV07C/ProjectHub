@@ -9,7 +9,6 @@ export const getUserByEmail = async (email: string) => {
       where: {
         email: email,
       },
-      
     });
 
     return user;
@@ -17,8 +16,6 @@ export const getUserByEmail = async (email: string) => {
     return null;
   }
 };
-
-
 
 export const getUserByUserName = async (userName: string) => {
   try {
@@ -32,8 +29,10 @@ export const getUserByUserName = async (userName: string) => {
         userName: true,
         location: true,
         website: true,
-        email:true,
+        email: true,
         createdAt: true,
+        followers: true,
+        following: true,
         _count: {
           select: {
             followers: true,
@@ -59,11 +58,24 @@ export const getUserById = async (id: string) => {
   try {
     const user = await prisma.user.findUnique({
       where: { id: id },
-      include: {
+      select: {
+        id: true,
+        bio: true,
+        name: true,
+        image: true,
+        userName: true,
+        location: true,
+        website: true,
+        email: true,
+        emailVerified:true,
+        createdAt: true,
+        followers: true,
+        following: true,
         _count: {
           select: {
             followers: true,
             following: true,
+            projects: true,
           },
         },
       },
@@ -103,7 +115,6 @@ export const getRandomUsers = async (id: string) => {
     return [];
   }
 };
-
 
 export const toggleFollowButton = async (
   targetUserId: string,
@@ -150,7 +161,7 @@ export const toggleFollowButton = async (
       ]);
     }
 
-    revalidatePath("/feed")
+    revalidatePath("/feed");
 
     return { success: true };
   } catch (error) {
@@ -158,15 +169,11 @@ export const toggleFollowButton = async (
       return { error: error.message };
     }
     return { error: "An unknown error occurred" };
-
   }
 };
 
-
-export async function updateProfile(formData: FormData , userId:string) {
+export async function updateProfile(formData: FormData, userId: string) {
   try {
-   
-
     const name = formData.get("name") as string;
     const bio = formData.get("bio") as string;
     const location = formData.get("location") as string;
@@ -179,7 +186,6 @@ export async function updateProfile(formData: FormData , userId:string) {
         bio,
         location,
         website,
-        
       },
     });
 
@@ -191,10 +197,8 @@ export async function updateProfile(formData: FormData , userId:string) {
   }
 }
 
-export async function isFollowing(targetUserId: string,userId: string) {
+export async function isFollowing(targetUserId: string, userId: string) {
   try {
-   
-
     const follow = await prisma.follows.findUnique({
       where: {
         followerId_followingId: {
@@ -210,3 +214,25 @@ export async function isFollowing(targetUserId: string,userId: string) {
     return false;
   }
 }
+
+export async function isFollowed(targetUserId: string, userId: string) {
+  try {
+    const follow = await prisma.follows.findUnique({
+      where: {
+        followerId_followingId: {
+          followerId: targetUserId,
+          followingId: userId,
+        },
+      },
+    });
+
+    return !!follow;
+  } catch (error) {
+    console.error("Error checking follow status:", error);
+    return false;
+  }
+}
+
+
+
+

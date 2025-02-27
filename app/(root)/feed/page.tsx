@@ -30,6 +30,8 @@ const Feed = async () => {
       followers: 0,
       ...session?.user?._count,
     },
+    followers: [],
+    following: [],
   };
 
   if (!currentUser) return null;

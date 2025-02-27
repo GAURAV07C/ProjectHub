@@ -4,21 +4,15 @@ import React, { useEffect } from "react";
 
 import {
   getUserByUserName,
-
   toggleFollowButton,
   getUserById,
- 
   isFollowing,
 } from "@/data/user";
 
 import { getProjectsByUserId } from "@/actions/projectAction";
 
-
-
-
 import {
   Dialog,
-  
   DialogContent,
   DialogHeader,
   DialogTitle,
@@ -29,7 +23,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-
 
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -47,7 +40,7 @@ interface ProfilePageClientProps {
   likedprojects: Projects;
   isFollowing: boolean;
   currentUserId: string;
-  currentUser: NonNullable<User>
+  currentUser: NonNullable<User>;
 }
 
 const ProfilePageClient: React.FC<ProfilePageClientProps> = ({
@@ -68,18 +61,18 @@ const ProfilePageClient: React.FC<ProfilePageClientProps> = ({
 
   const [searchQuery, setSearchQuery] = useState("");
 
-   const [followerUsers, setFollowerUsers] = useState<NonNullable<User>[]>([]);
+  const [followerUsers, setFollowerUsers] = useState<NonNullable<User>[]>([]);
 
   const [followingUsers, setFollowingUsers] = useState<NonNullable<User>[]>([]);
 
-  const [followingUsersCreatedAt, setFollowingUsersCreatedAt] = useState< Date |string | number | null>();
+  const [followingUsersCreatedAt, setFollowingUsersCreatedAt] = useState<
+    Date | string | number | null
+  >();
 
   const [followerUsersCreatedAt, setFollowerUsersCreatedAt] = useState<
     Date | string | number | null
   >();
-const [isFollowedUser, setIsFollowedUser] = useState<boolean>(false);
-
-
+  const [isFollowedUser, setIsFollowedUser] = useState<boolean>(false);
 
   const handleFollow = async (targetId: string) => {
     if (!currentUser) return;
@@ -98,22 +91,22 @@ const [isFollowedUser, setIsFollowedUser] = useState<boolean>(false);
     }
   };
 
-  
- 
-
   useEffect(() => {
     const fetchFollowers = async () => {
       const fetchedFollowers = await Promise.all(
         user.followers.map(async (followerUser) => {
           setFollowerUsersCreatedAt(followerUser.createdAt);
-          const isUserFollow = await isFollowing(followerUser.followerId, currentUserId);
+          const isUserFollow = await isFollowing(
+            followerUser.followerId,
+            currentUserId
+          );
           setIsFollowedUser(isUserFollow);
           setFollowerUsersCreatedAt(followerUser.createdAt);
           const getFollowerUser = await getUserById(followerUser.followerId);
           return getFollowerUser;
         })
       );
-      
+
       setFollowerUsers(
         fetchedFollowers.filter(
           (follower) => follower !== null
@@ -130,7 +123,7 @@ const [isFollowedUser, setIsFollowedUser] = useState<boolean>(false);
         user.following.map(async (followingUser) => {
           setFollowingUsersCreatedAt(followingUser.createdAt);
           const getfollowingUser = await getUserById(followingUser.followingId);
-          
+
           return getfollowingUser;
         })
       );
@@ -146,7 +139,7 @@ const [isFollowedUser, setIsFollowedUser] = useState<boolean>(false);
 
   return (
     <div className="max-w-3xl mx-auto">
-      <div className="grid grid-cols-1 gap-6">
+      <div className="grid grid-cols-1 gap-6 relative">
         <ProfileCard
           user={user}
           currentUser={currentUser}

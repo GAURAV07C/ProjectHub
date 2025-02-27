@@ -9,7 +9,7 @@ import { isFollowing, getUserByUserName } from "@/data/user";
 
 import { auth } from "@/lib/auth";
 
-import ProfilePageClient from "./ProfilePageClient";
+import ProfilePageClient from "@/components/profile/ProfilePageClient";
 
 
 export async function generateMetadata({
@@ -42,6 +42,7 @@ const page = async ({ params }: { params: Promise<{ userName: string }> }) => {
     getProjectsByUserId(user.id),
     getUserLikedProjects(user.id),
     isFollowing(user.id, userId as string),
+    
   ]);
 
   const currentUser = {
@@ -55,7 +56,14 @@ const page = async ({ params }: { params: Promise<{ userName: string }> }) => {
     location: session?.user?.location ?? null,
     website: session?.user?.website ?? null,
     createdAt: new Date(), // Add the createdAt property
-    _count: { projects: 0, following: 0, followers: 0, ...session?.user?._count },
+    _count: {
+      projects: 0,
+      following: 0,
+      followers: 0,
+      ...session?.user?._count,
+    },
+    followers: user.followers,
+    following: user.following,
   };
 
   if(!currentUser) return null
