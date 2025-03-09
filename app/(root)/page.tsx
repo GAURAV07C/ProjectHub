@@ -23,6 +23,7 @@ import {
   MessageSquare,
   Share2,
 } from "lucide-react";
+import Image from "next/image";
 
 function App() {
   const [activeTab, setActiveTab] = useState("web");
@@ -438,9 +439,11 @@ function App() {
                 className="p-6 sm:p-8 rounded-xl bg-gradient-to-b from-gray-800 to-gray-900 backdrop-blur-lg border border-gray-700"
               >
                 <div className="flex items-center gap-4 mb-6">
-                  <img
+                  <Image
                     src={testimonial.image}
                     alt={testimonial.name}
+                    width={64}
+                    height={64}
                     className="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover border-2 border-blue-500"
                   />
                   <div>
@@ -453,7 +456,7 @@ function App() {
                   </div>
                 </div>
                 <p className="text-gray-300 mb-4 italic text-sm sm:text-base">
-                  "{testimonial.text}"
+                  &quot;{testimonial.text}&quot;
                 </p>
                 <div className="text-sm font-medium text-blue-400 bg-blue-500 bg-opacity-10 py-2 px-4 rounded-full inline-block">
                   {testimonial.award}
@@ -541,7 +544,7 @@ function App() {
                 whileTap={{ scale: 0.95 }}
                 className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 sm:px-8 py-4 rounded-full text-lg font-semibold hover:shadow-lg transition-all duration-300"
               >
-                Get Started - It's Free
+                Get Started - It&apos;s Free
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.05 }}
