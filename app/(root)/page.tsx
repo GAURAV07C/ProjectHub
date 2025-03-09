@@ -22,6 +22,8 @@ import {
   Target,
   MessageSquare,
   Share2,
+  ArrowRight,
+  Check,
 } from "lucide-react";
 import Image from "next/image";
 
@@ -152,22 +154,22 @@ function App() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
+    <div className="min-h-screen bg-gray-900 text-white ">
       {/* Hero Section */}
       <motion.section
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="relative min-h-screen flex items-center justify-center overflow-hidden px-4 sm:px-6"
+        className="relative min-h-screen flex items-center justify-center overflow-hidden"
         style={{
           background:
-            "linear-gradient(45deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%)",
+            "linear-gradient(135deg, #0A1128 0%, #1A2238 50%, #0A1128 100%)",
         }}
       >
         <div className="absolute inset-0 overflow-hidden">
           {[...Array(30)].map((_, i) => (
             <motion.div
               key={i}
-              className="absolute bg-gradient-to-r from-blue-500 to-purple-500 rounded-full opacity-[0.15]"
+              className="absolute bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full"
               style={{
                 width: Math.random() * 300 + 50,
                 height: Math.random() * 300 + 50,
@@ -188,7 +190,7 @@ function App() {
           ))}
         </div>
 
-        <div className="container mx-auto relative z-10">
+        <div className="container relative z-10">
           <motion.div
             initial={{ y: 50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -199,29 +201,34 @@ function App() {
               initial={{ scale: 0.5, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.2, duration: 0.5 }}
-              className="mb-6 inline-block"
+              className="mb-8 inline-block animate-float"
             >
-              <Rocket className="w-12 h-12 sm:w-16 sm:h-16 text-blue-400" />
+              <div className="glass-card p-4">
+                <Rocket className="w-16 h-16 sm:w-20 sm:h-20 text-blue-400" />
+              </div>
             </motion.div>
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500">
-              Where Projects Meet Innovators
+            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold mb-6 gradient-text leading-tight">
+              Where Innovation Takes Flight
             </h1>
-            <p className="text-lg sm:text-xl md:text-2xl mb-8 text-gray-300 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl sm:text-2xl md:text-3xl mb-8 text-gray-300 max-w-4xl mx-auto leading-relaxed">
               Join the largest student innovation platform. Showcase your
               projects, collaborate with peers, and build your future in tech.
             </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-purple-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:shadow-lg transition-all duration-300"
+                className="button-primary group w-full sm:w-auto"
               >
-                Join Now - It&apos;s Free
+                <span className="flex items-center justify-center gap-2">
+                  Join Now - It&apos;s Free
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </span>
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="w-full sm:w-auto bg-gray-800 text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-gray-700 transition-all duration-300"
+                className="button-secondary group w-full sm:w-auto"
               >
                 Watch Demo
               </motion.button>
@@ -232,16 +239,16 @@ function App() {
               initial={{ y: 50, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.5, duration: 0.5 }}
-              className="mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8"
+              className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6"
             >
               {stats.map((stat, index) => (
                 <motion.div
                   key={index}
                   whileHover={{ y: -5 }}
-                  className="bg-gray-800 bg-opacity-50 backdrop-blur-lg rounded-xl p-6"
+                  className="glass-card p-6 sm:p-8"
                 >
-                  <stat.icon className="w-8 h-8 text-blue-400 mb-3 mx-auto" />
-                  <div className="text-2xl sm:text-3xl font-bold text-white mb-1">
+                  <stat.icon className="w-8 h-8 text-blue-400 mb-4 mx-auto" />
+                  <div className="text-3xl sm:text-4xl font-bold gradient-text mb-2">
                     {stat.value}
                   </div>
                   <div className="text-gray-400">{stat.label}</div>
@@ -250,6 +257,15 @@ function App() {
             </motion.div>
           </motion.div>
         </div>
+
+        {/* Scroll Indicator */}
+        <motion.div
+          animate={{ y: [0, 10, 0] }}
+          transition={{ duration: 1.5, repeat: Infinity }}
+          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+        >
+          <ChevronDown className="w-8 h-8 text-gray-400" />
+        </motion.div>
       </motion.section>
 
       {/* GitHub Comparison */}
@@ -340,10 +356,10 @@ function App() {
             transition={{ duration: 0.5 }}
             className="text-center mb-12 sm:mb-16"
           >
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+            <h2 className="text-4xl sm:text-5xl font-bold mb-6 gradient-text">
               Powerful Features for Innovators
             </h2>
-            <p className="text-lg sm:text-xl text-gray-300">
+            <p className="text-xl sm:text-2xl text-gray-300">
               Everything you need to showcase your projects and grow your career
             </p>
           </motion.div>
@@ -355,16 +371,17 @@ function App() {
                 whileInView={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 whileHover={{ y: -5 }}
-                className="p-6 sm:p-8 rounded-xl bg-gradient-to-b from-gray-800 to-gray-900 backdrop-blur-lg shadow-xl border border-gray-700"
+                className="glass-card p-8"
               >
-                <div className="bg-blue-500 bg-opacity-20 w-12 h-12 sm:w-16 sm:h-16 rounded-lg flex items-center justify-center mb-6">
-                  <feature.icon className="w-6 h-6 sm:w-8 sm:h-8 text-blue-400" />
+                <div className="bg-gradient-to-br from-blue-500/20 to-purple-500/20 w-16 h-16 rounded-2xl flex items-center justify-center mb-6">
+                  <feature.icon className="w-8 h-8 text-blue-400" />
                 </div>
-                <h3 className="text-xl sm:text-2xl font-semibold mb-2">
-                  {feature.title}
-                </h3>
-                <p className="text-gray-300 mb-4">{feature.description}</p>
-                <div className="text-sm font-medium text-blue-400 bg-blue-500 bg-opacity-10 py-2 px-4 rounded-full inline-block">
+                <h3 className="text-2xl font-bold mb-4">{feature.title}</h3>
+                <p className="text-gray-300 mb-6 text-lg">
+                  {feature.description}
+                </p>
+                <div className="text-sm font-medium text-blue-400 bg-blue-500/10 py-2 px-4 rounded-full inline-flex items-center gap-2">
+                  <Check className="w-4 h-4" />
                   {feature.highlight}
                 </div>
               </motion.div>
@@ -382,10 +399,10 @@ function App() {
             transition={{ duration: 0.5 }}
             className="text-center mb-12 sm:mb-16"
           >
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+            <h2 className="text-4xl sm:text-5xl font-bold mb-6 gradient-text">
               Explore Project Categories
             </h2>
-            <p className="text-lg sm:text-xl text-gray-300">
+            <p className="text-xl sm:text-2xl text-gray-300">
               Discover amazing projects across different domains
             </p>
           </motion.div>
@@ -395,16 +412,16 @@ function App() {
                 key={category.id}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className={`w-full sm:w-auto px-4 sm:px-6 py-4 rounded-xl flex flex-col items-center gap-2 ${
+                className={`glass-card p-6 flex flex-col items-center gap-3 min-w-[200px] ${
                   activeTab === category.id
-                    ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white"
-                    : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                    ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20 border-blue-500/50"
+                    : "hover:bg-white/5"
                 }`}
                 onClick={() => setActiveTab(category.id)}
               >
-                <category.icon className="w-6 h-6 sm:w-8 sm:h-8" />
-                <span className="font-semibold">{category.name}</span>
-                <span className="text-sm opacity-75">{category.count}</span>
+                <category.icon className="w-8 h-8 text-blue-400" />
+                <span className="font-semibold text-lg">{category.name}</span>
+                <span className="text-sm text-gray-400">{category.count}</span>
               </motion.button>
             ))}
           </div>
@@ -413,22 +430,22 @@ function App() {
 
       {/* Testimonials */}
       <section className="py-16 sm:py-20 bg-gray-900">
-        <div className="container mx-auto px-4 sm:px-6">
+        <div className="container">
           <motion.div
             initial={{ y: 20, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5 }}
-            className="text-center mb-12 sm:mb-16"
+            className="text-center mb-16"
           >
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+            <h2 className="text-4xl sm:text-5xl font-bold mb-6 gradient-text">
               Success Stories
             </h2>
-            <p className="text-lg sm:text-xl text-gray-300">
+            <p className="text-xl sm:text-2xl text-gray-300">
               Join thousands of students who launched their careers through
               Project Hub
             </p>
           </motion.div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {testimonials.map((testimonial, index) => (
               <motion.div
                 key={index}
@@ -436,7 +453,7 @@ function App() {
                 whileInView={{ scale: 1, opacity: 1 }}
                 transition={{ duration: 0.5 }}
                 whileHover={{ y: -5 }}
-                className="p-6 sm:p-8 rounded-xl bg-gradient-to-b from-gray-800 to-gray-900 backdrop-blur-lg border border-gray-700"
+                className="glass-card p-8"
               >
                 <div className="flex items-center gap-4 mb-6">
                   <Image
@@ -444,21 +461,20 @@ function App() {
                     alt={testimonial.name}
                     width={64}
                     height={64}
-                    className="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover border-2 border-blue-500"
+                    className="w-16 h-16 rounded-full object-cover ring-2 ring-blue-500"
                   />
                   <div>
-                    <h4 className="text-lg sm:text-xl font-semibold">
+                    <h4 className="text-xl font-semibold">
                       {testimonial.name}
                     </h4>
-                    <p className="text-sm sm:text-base text-gray-400">
-                      {testimonial.role}
-                    </p>
+                    <p className="text-gray-400">{testimonial.role}</p>
                   </div>
                 </div>
-                <p className="text-gray-300 mb-4 italic text-sm sm:text-base">
+                <p className="text-gray-300 mb-6 italic">
                   &quot;{testimonial.text}&quot;
                 </p>
-                <div className="text-sm font-medium text-blue-400 bg-blue-500 bg-opacity-10 py-2 px-4 rounded-full inline-block">
+                <div className="text-sm font-medium text-blue-400 bg-blue-500/10 py-2 px-4 rounded-full inline-flex items-center gap-2">
+                  <Award className="w-4 h-4" />
                   {testimonial.award}
                 </div>
               </motion.div>
@@ -476,10 +492,10 @@ function App() {
             transition={{ duration: 0.5 }}
             className="text-center mb-12 sm:mb-16"
           >
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+            <h2 className="text-4xl sm:text-5xl font-bold mb-6 gradient-text">
               Frequently Asked Questions
             </h2>
-            <p className="text-lg sm:text-xl text-gray-300">
+            <p className="text-xl sm:text-2xl text-gray-300">
               Everything you need to know about Project Hub
             </p>
           </motion.div>
@@ -531,10 +547,10 @@ function App() {
             transition={{ duration: 0.6 }}
             className="max-w-4xl mx-auto"
           >
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6">
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-8 gradient-text">
               Ready to Showcase Your Innovation?
             </h2>
-            <p className="text-lg sm:text-xl text-gray-300 mb-8">
+            <p className="text-xl sm:text-2xl text-gray-300 mb-12">
               Join thousands of student innovators and start building your
               future today.
             </p>

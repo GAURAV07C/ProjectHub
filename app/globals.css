@@ -4,6 +4,13 @@
 @tailwind components;
 @tailwind utilities;
 
+html,
+body {
+  overflow-x: hidden;
+  max-width: 100vw;
+  scroll-behavior: smooth;
+}
+
 @layer base {
   :root {
     --radius: 0.5rem;
@@ -59,7 +66,36 @@
     --chart-5: 340 75% 55%;
   }
 }
+.gradient-text {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500;
+}
 
+.glass-card {
+  @apply backdrop-blur-lg bg-white/5 border border-white/10 rounded-2xl;
+}
+
+.button-primary {
+  @apply bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-8 py-4 rounded-full font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/25;
+}
+
+.button-secondary {
+  @apply bg-white/10 hover:bg-white/15 text-white px-8 py-4 rounded-full font-semibold transition-all duration-300 backdrop-blur-sm;
+}
+
+/* Animations */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
 @layer utilities {
   .flex-between {
     @apply flex justify-between items-center;
@@ -134,7 +170,7 @@
   }
 
   .section_container {
-    @apply px-6 py-10 max-w-7xl mx-auto ;
+    @apply px-6 py-10 max-w-7xl mx-auto;
   }
 
   .card_grid {
@@ -307,8 +343,6 @@
     @apply bg-background text-foreground;
   }
 }
-
-
 
 @layer base {
   * {
