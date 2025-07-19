@@ -122,30 +122,7 @@ function App() {
             "linear-gradient(135deg, #0A1128 0%, #1A2238 50%, #0A1128 100%)",
         }}
       >
-        <div className="absolute inset-0 overflow-hidden">
-          {[...Array(30)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full"
-              style={{
-                width: Math.random() * 300 + 50,
-                height: Math.random() * 300 + 50,
-                left: Math.random() * 100 + "%",
-                top: Math.random() * 100 + "%",
-              }}
-              animate={{
-                y: [0, Math.random() * 100 - 50],
-                scale: [1, Math.random() + 0.5],
-                rotate: [0, Math.random() * 360],
-              }}
-              transition={{
-                duration: Math.random() * 5 + 3,
-                repeat: Infinity,
-                repeatType: "reverse",
-              }}
-            />
-          ))}
-        </div>
+    
 
         <div className="container relative z-10">
           <motion.div
