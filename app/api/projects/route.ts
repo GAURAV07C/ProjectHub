@@ -30,6 +30,11 @@ export async function GET() {
           orderBy: { createdAt: "asc" },
         },
         likes: { select: { userId: true } },
+        skills: {
+          include: {
+            skill: true,
+          },
+        },
         _count: { select: { comments: true, likes: true } },
       },
     });
@@ -52,28 +57,92 @@ export async function POST(request: Request) {
 
     if (!validatedFields.success) {
       return NextResponse.json(
-        { error: "Invalid fields!" },
+        { error: "Invalid fields!", errors: validatedFields.error.flatten().fieldErrors },
         { status: 400 }
       );
     }
 
-    const { category, description, imageurl, title, details, Link } =
-      validatedFields.data;
+    const {
+      title,
+      slug,
+      description,
+      excerpt,
+      content,
+      image,
+      company,
+      year,
+      techStack,
+      tags,
+      liveLink,
+      sourceLink,
+      demoLink,
+      isRecent,
+      category,
+      challenges,
+      features,
+      outcomes,
+    } = validatedFields.data;
 
-    await prisma.project.create({
+    const project = await prisma.project.create({
       data: {
         title,
-        category,
+        slug,
         description,
-        imageUrl: imageurl,
-        details,
+        excerpt: excerpt || "",
+        content: content || "",
+        image,
+        company,
+        year,
+        techStack: techStack || "[]",
+        tags: tags || "[]",
+        liveLink: liveLink || null,
+        sourceLink: sourceLink || null,
+        demoLink: demoLink || null,
+        isRecent: isRecent || false,
+        category,
+        challenges: challenges || "",
+        features: features || "",
+        outcomes: outcomes || "",
         authorId: session.user.id,
-        Link,
+      },
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+            userName: true,
+          },
+        },
       },
     });
 
+    if (techStack) {
+      try {
+        const techStackArray = JSON.parse(techStack);
+        for (const techTitle of techStackArray) {
+          let skill = await prisma.skill.findUnique({
+            where: { title: techTitle },
+          });
+          if (!skill) {
+            skill = await prisma.skill.create({
+              data: { title: techTitle },
+            });
+          }
+          await prisma.projectSkill.create({
+            data: {
+              projectId: project.id,
+              skillId: skill.id,
+            },
+          });
+        }
+      } catch (error) {
+        console.error("Error creating project skills:", error);
+      }
+    }
+
     return NextResponse.json(
-      { success: "Project created successfully" },
+      { success: "Project created successfully", project },
       { status: 201 }
     );
   } catch (error) {

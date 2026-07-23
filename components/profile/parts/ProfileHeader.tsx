@@ -21,6 +21,7 @@ interface ProfileHeaderProps {
   isFollowings: boolean;
   setActiveTab: (tab: "followers" | "following") => void;
   setIsModalOpen: (open: boolean) => void;
+  projectCount: number;
 }
 
 const ProfileHeader: React.FC<ProfileHeaderProps> = ({
@@ -32,6 +33,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
   isFollowings,
   setActiveTab,
   setIsModalOpen,
+  projectCount,
 }) => {
   const isOwnedProfile =
     currentUser?.userName === user.userName ||
@@ -40,125 +42,152 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
   const formattedDate = format(new Date(user.createdAt), "MMMM yyyy");
 
   return (
-    <div className="w-full max-w-lg mx-auto">
-      <div className="bg-card rounded-2xl p-6 border border-white/10">
-        <div className="flex flex-col items-center text-center">
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full blur opacity-40" />
-            <Avatar className="w-24 h-24 relative ring-2 ring-white/10">
-              <AvatarImage
-                src={
-                  user.image ??
-                  `https://api.dicebear.com/5.x/initials/svg?seed=${user.name}`
-                }
-              />
-            </Avatar>
-          </div>
-          <h1 className="mt-4 text-2xl font-bold text-white">
-            {user.name ?? user.userName}
-          </h1>
-          <p className="text-muted-foreground">@{user.userName}</p>
-          {user.bio && <p className="mt-2 text-sm text-gray-300">{user.bio}</p>}
+    <div className="w-full max-w-4xl mx-auto mb-12">
+      {/* Profile Header - Instagram Style */}
+      <div className="flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-10">
+        {/* Avatar with gradient ring */}
+        <div className="relative flex-shrink-0">
+          <div className="absolute -inset-1 bg-gradient-to-r from-emerald-300 via-blue-500 to-purple-600 rounded-full blur opacity-70" />
+          <Avatar className="w-24 h-24 md:w-36 md:h-36 relative ring-2 ring-gray-900">
+            <AvatarImage
+              src={
+                user.image ??
+                `https://api.dicebear.com/5.x/initials/svg?seed=${user.name}`
+              }
+              className="object-cover"
+            />
+          </Avatar>
+        </div>
 
-          <div className="w-full mt-6">
-            <div className="flex justify-between mb-4">
-              <div
-                onClick={() => {
-                  setActiveTab("following");
-                  setIsModalOpen(true);
-                }}
-                className="cursor-pointer hover:bg-white/5 rounded-lg p-2 transition-colors"
-              >
-                <div className="font-semibold text-white">
-                  {user._count.following.toLocaleString()}
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  Following
-                </div>
-              </div>
-              <Separator orientation="vertical" className="bg-white/10" />
-              <div
-                onClick={() => {
-                  setActiveTab("followers");
-                  setIsModalOpen(true);
-                }}
-                className="cursor-pointer hover:bg-white/5 rounded-lg p-2 transition-colors"
-              >
-                <div className="font-semibold text-white">
-                  {user._count.followers.toLocaleString()}
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  Followers
-                </div>
-              </div>
-              <Separator orientation="vertical" className="bg-white/10" />
-              <div>
-                <div className="font-semibold text-white">
-                  {user._count.projects.toLocaleString()}
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  Projects
-                </div>
-              </div>
+        {/* Profile Info */}
+        <div className="flex-1 text-center md:text-left">
+          {/* Username and Action Buttons */}
+          <div className="flex flex-col md:flex-row items-center gap-4 mb-4">
+            <h1 className="text-2xl md:text-3xl font-bold text-white">
+              {user.userName}
+            </h1>
+            
+            <div className="flex items-center gap-2">
+              {!currentUser.userName ? (
+                <LoginButton>
+                  <Button className="bg-gradient-to-r from-emerald-300 to-blue-500 hover:from-emerald-400 hover:to-blue-600 text-gray-950 font-semibold">
+                    Follow
+                  </Button>
+                </LoginButton>
+              ) : isOwnedProfile ? (
+                <Button
+                  variant="outline"
+                  className="border-white/20 text-white hover:bg-white/10"
+                  onClick={() => setShowEditDialog(true)}
+                >
+                  <EditIcon className="size-4 mr-2" />
+                  Edit Profile
+                </Button>
+              ) : (
+                <Button
+                  className="bg-gradient-to-r from-emerald-300 to-blue-500 hover:from-emerald-400 hover:to-blue-600 text-gray-950 font-semibold"
+                  onClick={() => handleFollow(user.id)}
+                  disabled={isUpdatingFollow}
+                >
+                  {isFollowings ? "Following" : "Follow"}
+                </Button>
+              )}
             </div>
           </div>
 
-          {!currentUser.userName ? (
-            <LoginButton>
-              <Button className="w-full mt-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700">
-                Follow
-              </Button>
-            </LoginButton>
-          ) : isOwnedProfile ? (
-            <Button
-              className="w-full mt-4 bg-white/10 hover:bg-white/15 text-white border border-white/10"
-              onClick={() => setShowEditDialog(true)}
+          {/* Stats */}
+          <div className="flex items-center justify-center md:justify-start gap-6 md:gap-8 mb-4">
+            <div className="text-center">
+              <span className="block text-xl md:text-2xl font-bold text-white">
+                {projectCount}
+              </span>
+              <span className="text-sm text-gray-400">projects</span>
+            </div>
+            <Separator orientation="vertical" className="h-8 bg-white/10" />
+            <div
+              onClick={() => {
+                setActiveTab("followers");
+                setIsModalOpen(true);
+              }}
+              className="text-center cursor-pointer hover:opacity-70 transition-opacity"
             >
-              <EditIcon className="size-4 mr-2" />
-              Edit Profile
-            </Button>
-          ) : (
-            <Button
-              className="w-full mt-4"
-              onClick={() => handleFollow(user.id)}
-              disabled={isUpdatingFollow}
-              variant={isFollowings ? "outline" : "default"}
+              <span className="block text-xl md:text-2xl font-bold text-white">
+                {user._count.followers.toLocaleString()}
+              </span>
+              <span className="text-sm text-gray-400">followers</span>
+            </div>
+            <Separator orientation="vertical" className="h-8 bg-white/10" />
+            <div
+              onClick={() => {
+                setActiveTab("following");
+                setIsModalOpen(true);
+              }}
+              className="text-center cursor-pointer hover:opacity-70 transition-opacity"
             >
-              {isFollowings ? "Unfollow" : "Follow"}
-            </Button>
-          )}
+              <span className="block text-xl md:text-2xl font-bold text-white">
+                {user._count.following.toLocaleString()}
+              </span>
+              <span className="text-sm text-gray-400">following</span>
+            </div>
+          </div>
 
-          <div className="w-full mt-6 space-y-2 text-sm">
-            {user.location && (
-              <div className="flex items-center text-muted-foreground">
-                <MapPinIcon className="size-4 mr-2" />
-                {user.location}
-              </div>
+          {/* Bio */}
+          <div className="space-y-1">
+            {user.name && (
+              <p className="font-semibold text-white text-sm">
+                {user.name}
+              </p>
             )}
-            {user.website && (
-              <div className="flex items-center text-muted-foreground">
-                <LinkIcon className="size-4 mr-2" />
+            {user.bio && (
+              <p className="text-sm text-gray-300 whitespace-pre-wrap">
+                {user.bio}
+              </p>
+            )}
+            
+            <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 text-sm text-gray-400 mt-2">
+              {user.location && (
+                <div className="flex items-center gap-1">
+                  <MapPinIcon className="size-3.5" />
+                  <span>{user.location}</span>
+                </div>
+              )}
+              {user.website && (
                 <a
                   href={
                     user.website.startsWith("http")
                       ? user.website
                       : `https://${user.website}`
                   }
-                  className="hover:text-white transition-colors"
+                  className="flex items-center gap-1 text-blue-400 hover:text-blue-300 transition-colors"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  {user.website}
+                  <LinkIcon className="size-3.5" />
+                  <span>{user.website}</span>
                 </a>
+              )}
+              <div className="flex items-center gap-1">
+                <CalendarIcon className="size-3.5" />
+                <span>Joined {formattedDate}</span>
               </div>
-            )}
-            <div className="flex items-center text-muted-foreground">
-              <CalendarIcon className="size-4 mr-2" />
-              Joined {formattedDate}
             </div>
           </div>
         </div>
       </div>
+
+      {/* Highlights / Skills Tags */}
+      {user.userSkills && user.userSkills.length > 0 && (
+        <div className="flex flex-wrap gap-2 mt-6 pt-6 border-t border-white/10">
+          {user.userSkills.map((userSkill) => (
+            <span
+              key={userSkill.id}
+              className="px-4 py-1.5 bg-white/5 border border-white/10 rounded-full text-sm text-gray-300 hover:bg-white/10 transition-colors"
+            >
+              {userSkill.skill.title}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

@@ -2,7 +2,6 @@ import { ThemeProvider } from "@/components/theme-provider";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import NavBar from "@/components/Nav/NavBar";
 import { Toaster } from "react-hot-toast";
 
 const geistSans = Geist({
@@ -36,15 +35,8 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div
-            className="min-h-screen
-           
-            "
-            // flex flex-col-reverse md:flex-col
-          >
-            <NavBar />
-
-            <div className="lg:col-span-9 md:py-12 py-12">{children}</div>
+          <div className="min-h-screen">
+            {children}
           </div>
           <Toaster />
         </ThemeProvider>

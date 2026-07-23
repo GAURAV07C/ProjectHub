@@ -3,7 +3,6 @@ import { Session } from "next-auth";
 
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import ModeToggle from "@/components/ModeToggle";
 import NavLink from "./parts/NavLink";
 import AuthButtons from "./parts/AuthButtons";
 import UserMenu from "./parts/UserMenu";
@@ -15,25 +14,21 @@ interface DesktopNavbarProps {
 
 const DesktopNavbar: React.FC<DesktopNavbarProps> = ({ session, user }) => {
   return (
-    <div className="hidden md:flex items-center space-x-4">
-      <ModeToggle />
-
+    <div className="hidden md:flex items-center gap-3">
       <NavLink href="/" icon={HomeIcon} label="Home" />
-      
+
       {user ? (
         <>
           <NavLink href="/notifications" icon={BellIcon} label="Notifications" />
-          
+
           <Link href="/create">
             <Button
               variant="ghost"
               size="sm"
-              className="hover:bg-gray-100 dark:hover:bg-gray-800/50"
+              className="text-white/80 hover:text-white hover:bg-white/10"
             >
-              <PlusCircle className="h-5 w-5 mr-2 text-gray-600 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400" />
-              <span className="hidden lg:inline text-gray-700 dark:text-gray-300">
-                Create Project
-              </span>
+              <PlusCircle className="h-4 w-4 mr-1.5" />
+              <span className="text-sm">Create</span>
             </Button>
           </Link>
 

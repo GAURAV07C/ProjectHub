@@ -25,6 +25,7 @@ model User {
   projects Project[] // one-to-many
   comments Comment[] // one-to-many
   likes    Like[] // one-to-many
+  userSkills UserSkill[]
 
   followers Follows[] @relation("following") // users who follow this user
   following Follows[] @relation("follower") // users this user follows
@@ -74,36 +75,83 @@ model PasswordResetToken {
 model Project {
   id          String   @id @default(cuid())
   title       String
-  description String
-  category    String
-  imageUrl    String
-  details     String?
+  slug        String   @unique
+  description String   @default("")
+  excerpt     String   @default("")
+  content     String   @default("")
+  image       String?
+  company     String?
+  year        String?
+  techStack   String   @default("[]")
+  tags        String   @default("[]")
+  liveLink    String?
+  sourceLink  String?
+  demoLink    String?
+  isRecent    Boolean  @default(false)
+  category    String?
+  views       Int      @default(0)
+  challenges  String   @default("")
+  features    String   @default("")
+  outcomes    String   @default("")
   authorId    String
-  Link       String?
-  author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade) // cascade deleted means delete all project if user is deleted
+  author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   comments Comment[] // one-to-many
   likes    Like[] // one-to-many
+  skills   ProjectSkill[]
 
   notifications Notification[]
+}
+
+model Skill {
+  id        String    @id @default(cuid())
+  title     String    @unique
+  iconName  String?
+  createdAt DateTime  @default(now())
+  projects  ProjectSkill[]
+  users     UserSkill[]
+}
+
+model ProjectSkill {
+  id        String  @id @default(cuid())
+  projectId String
+  skillId   String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  skill     Skill   @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, skillId])
+}
+
+model UserSkill {
+  id        String  @id @default(cuid())
+  userId    String
+  skillId   String
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  skill     Skill   @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, skillId])
 }
 
 model Comment {
   id        String @id @default(cuid())
   content   String
-  authorId  String
+  name      String?
+  email     String?
+  parentId  String?
+  parent    Comment? @relation("CommentReplies", fields: [parentId], references: [id])
+  replies   Comment[] @relation("CommentReplies")
   projectId String
+  authorId  String?
 
   createdAt DateTime @default(now())
 
-  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
-
-  project      Project        @relation(fields: [projectId], onDelete: Cascade, references: [id])
+  author   User?    @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  project  Project  @relation(fields: [projectId], onDelete: Cascade, references: [id])
   Notification Notification[]
 
-  @@index([authorId, projectId]) // composite index for faster queries
+  @@index([authorId, projectId])
 }
 
 model Like {
@@ -118,8 +166,8 @@ model Like {
 
   project Project @relation(fields: [projectId], onDelete: Cascade, references: [id])
 
-  @@unique([userId, projectId]) //same user can not like twice 
-  @@index([userId, projectId]) // composite index for faster queries
+  @@unique([userId, projectId])
+  @@index([userId, projectId])
 }
 
 model Follows {
@@ -127,12 +175,11 @@ model Follows {
   followingId String
   createdAt   DateTime @default(now())
 
-  // Relations
   follower  User @relation("follower", fields: [followerId], references: [id], onDelete: Cascade)
   following User @relation("following", fields: [followingId], references: [id], onDelete: Cascade)
 
-  @@id([followerId, followingId]) // composite primary key prevents duplicate follows
-  @@index([followerId, followingId]) // composite index for faster queries
+  @@id([followerId, followingId])
+  @@index([followerId, followingId])
 }
 
 model Notification {
@@ -145,7 +192,6 @@ model Notification {
   commentId String?
   createdAt DateTime         @default(now())
 
-  // Relations
   user User @relation("userNotifications", fields: [userId], references: [id], onDelete: Cascade)
 
   creator  User     @relation("notificationCreator", fields: [creatorId], references: [id], onDelete: Cascade)

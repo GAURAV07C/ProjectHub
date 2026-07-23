@@ -34,6 +34,11 @@ export const getUserByUserName = async (userName: string) => {
         createdAt: true,
         followers: true,
         following: true,
+        userSkills: {
+          include: {
+            skill: true,
+          },
+        },
         _count: {
           select: {
             followers: true,

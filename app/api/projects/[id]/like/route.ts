@@ -14,10 +14,12 @@ export async function POST(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const userId = session.user.id;
+
     const existingLike = await prisma.like.findUnique({
       where: {
         userId_projectId: {
-          userId: session.user.id,
+          userId,
           projectId: id,
         },
       },
@@ -25,7 +27,7 @@ export async function POST(
 
     const project = await prisma.project.findUnique({
       where: { id },
-      select: { authorId: true },
+      select: { id: true, authorId: true },
     });
 
     if (!project) {
@@ -35,11 +37,23 @@ export async function POST(
       );
     }
 
+    const dbUser = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true },
+    });
+
+    if (!dbUser) {
+      return NextResponse.json(
+        { success: false, error: "User not found in database" },
+        { status: 404 }
+      );
+    }
+
     if (existingLike) {
       await prisma.like.delete({
         where: {
           userId_projectId: {
-            userId: session.user.id,
+            userId,
             projectId: id,
           },
         },
@@ -48,17 +62,17 @@ export async function POST(
       await prisma.$transaction([
         prisma.like.create({
           data: {
-            userId: session.user.id,
+            userId,
             projectId: id,
           },
         }),
-        ...(project?.authorId !== session.user.id
+        ...(project.authorId !== userId
           ? [
               prisma.notification.create({
                 data: {
                   type: "LIKE",
-                  userId: project!.authorId,
-                  creatorId: session.user.id,
+                  userId: project.authorId,
+                  creatorId: userId,
                   projectId: id,
                 },
               }),

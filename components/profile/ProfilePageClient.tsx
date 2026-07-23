@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
-import ProfileCard from "./ProfileCard";
+import ProfileHeader from "./parts/ProfileHeader";
+import ProfileTabs from "./parts/ProfileTabs";
+import EditProfileDialog from "./parts/EditProfileDialog";
 import { User, Project } from "@/types";
 import FollowModal from "./parts/FollowModal";
 
@@ -31,6 +33,7 @@ const ProfilePageClient: React.FC<ProfilePageClientProps> = ({
     "followers"
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [followerUsers, setFollowerUsers] = useState<NonNullable<User>[]>([]);
@@ -129,44 +132,55 @@ const ProfilePageClient: React.FC<ProfilePageClientProps> = ({
 
   if (!currentUser) return null;
 
-  if (!currentUser) return null;
-
   return (
-    <div className="max-w-3xl mx-auto">
-      <div className="grid grid-cols-1 gap-6 relative">
-        <ProfileCard
-          user={user}
-          currentUser={currentUser}
-          isFollowing={isFollowings}
-          handleFollow={handleFollow}
-          setShowEditDialog={() => {}}
-          showEditDialog={false}
-          isUpdatingFollow={isUpdatingFollow}
+    <div className="max-w-4xl mx-auto">
+      <ProfileHeader
+        user={user}
+        currentUser={currentUser}
+        handleFollow={handleFollow}
+        setShowEditDialog={setIsEditDialogOpen}
+        isUpdatingFollow={isUpdatingFollow}
+        isFollowings={isFollowings}
+        setActiveTab={setActiveTab}
+        setIsModalOpen={setIsModalOpen}
+        projectCount={projects.length}
+      />
+
+      <div className="mt-8">
+        <ProfileTabs
           projects={projects}
           likedprojects={likedprojects}
-          setIsModalOpen={setIsModalOpen}
-          setActiveTab={setActiveTab}
-          isFollowings={isFollowings}
-        />
-
-        <FollowModal
-          open={isModalOpen}
-          onOpenChange={setIsModalOpen}
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          followerUsers={followerUsers}
-          followingUsers={followingUsers}
-          followerUsersCreatedAt={followerUsersCreatedAt}
-          followingUsersCreatedAt={followingUsersCreatedAt}
-          currentUserId={currentUserId}
-          isFollowedUser={isFollowedUser}
-          isUpdatingFollow={isUpdatingFollow}
-          onFollow={handleFollow}
-          user={user}
+          userId={user.id}
+          currentUser={currentUser}
         />
       </div>
+
+      <EditProfileDialog
+        open={isEditDialogOpen}
+        onOpenChange={setIsEditDialogOpen}
+        user={user}
+        onSuccess={() => {
+          setIsEditDialogOpen(false);
+        }}
+      />
+
+      <FollowModal
+        open={isModalOpen}
+        onOpenChange={setIsModalOpen}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        followerUsers={followerUsers}
+        followingUsers={followingUsers}
+        followerUsersCreatedAt={followerUsersCreatedAt}
+        followingUsersCreatedAt={followingUsersCreatedAt}
+        currentUserId={currentUserId}
+        isFollowedUser={isFollowedUser}
+        isUpdatingFollow={isUpdatingFollow}
+        onFollow={handleFollow}
+        user={user}
+      />
     </div>
   );
 };

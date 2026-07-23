@@ -26,8 +26,8 @@ export async function GET() {
           select: {
             title: true,
             id: true,
-            imageUrl: true,
-            Link: true,
+            image: true,
+            liveLink: true,
             description: true,
           },
         },

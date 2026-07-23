@@ -5,5 +5,5 @@ export default function Layout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <main className="text-2xl">{children}</main>;
+  return <>{children}</>;
 }

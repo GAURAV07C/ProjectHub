@@ -15,70 +15,57 @@ interface MobileNavbarProps {
 const MobileNavbar: React.FC<MobileNavbarProps> = ({ session, user }) => {
   if (user) {
     return (
-      <div className="flex md:hidden lg:hidden items-center justify-between w-full px-4 py-2">
-        <div className="flex items-center justify-between w-full max-w-[400px] mx-auto">
-          <ModeToggle />
+      <div className="flex md:hidden items-center justify-between w-full px-4">
+        <Link href="/" className="flex items-center">
+          <span className="text-lg font-bold bg-gradient-to-r from-emerald-300 to-blue-500 bg-clip-text text-transparent font-mono">
+            PH
+          </span>
+        </Link>
 
-          <Button
-            variant="ghost"
-            className="flex items-center hover:bg-gray-800/50"
-            asChild
-          >
-            <Link href="/">
-              <HomeIcon className="w-6 h-6 text-gray-300 hover:text-blue-400" />
-            </Link>
-          </Button>
+        <div className="flex items-center gap-1">
+          <Link href="/">
+            <Button variant="ghost" size="icon" className="text-white/80 hover:text-white hover:bg-white/10">
+              <HomeIcon className="w-5 h-5" />
+            </Button>
+          </Link>
 
-          <Button
-            variant="ghost"
-            className="flex items-center hover:bg-gray-800/50"
-            asChild
-          >
-            <Link href="/notifications">
-              <BellIcon className="w-6 h-6 text-gray-300 hover:text-blue-400" />
-            </Link>
-          </Button>
+          <Link href="/notifications">
+            <Button variant="ghost" size="icon" className="text-white/80 hover:text-white hover:bg-white/10">
+              <BellIcon className="w-5 h-5" />
+            </Button>
+          </Link>
 
-          <Button
-            variant="ghost"
-            className="flex items-center hover:bg-gray-800/50"
-            asChild
-          >
-            <Link href="/create">
-              <PlusCircle className="w-6 h-6 text-gray-300 hover:text-blue-400" />
-            </Link>
-          </Button>
+          <Link href="/create">
+            <Button variant="ghost" size="icon" className="text-white/80 hover:text-white hover:bg-white/10">
+              <PlusCircle className="w-5 h-5" />
+            </Button>
+          </Link>
 
-          <Button
-            variant="ghost"
-            className="flex items-center hover:bg-gray-800/50"
-            asChild
+          <Link
+            href={`/${
+              session?.user?.userName ?? session?.user?.email?.split("@")[0]
+            }`}
           >
-            <Link
-              href={`/${
-                session?.user?.userName ?? session?.user?.email?.split("@")[0]
-              }`}
-            >
-              <Avatar className="h-8 w-8 border-2 border-gray-700 bg-gradient-to-r from-blue-500 to-purple-600">
-                <AvatarImage
-                  src={
-                    user?.image ??
-                    `https://api.dicebear.com/5.x/initials/svg?seed=${encodeURIComponent(
-                      user?.name ?? "U"
-                    )}`
-                  }
-                  alt="User Profile"
-                />
-              </Avatar>
-            </Link>
-          </Button>
+            <Avatar className="h-8 w-8 border border-white/20 cursor-pointer">
+              <AvatarImage
+                src={
+                  user?.image ??
+                  `https://api.dicebear.com/5.x/initials/svg?seed=${encodeURIComponent(
+                    user?.name ?? "U"
+                  )}`
+                }
+                alt="User Profile"
+              />
+            </Avatar>
+          </Link>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="visible md:hidden lg:hidden flex space-x-4">
+    <div className="flex md:hidden items-center gap-2">
+      <ModeToggle />
       <AuthButtons isLoggedIn={false} />
     </div>
   );

@@ -36,6 +36,8 @@ export async function POST(
     }
 
     const userId = session.user.id;
+    const userName = session.user.name ?? "";
+    const userEmail = session.user.email ?? "";
 
     const [comment] = await prisma.$transaction(async (tx) => {
       const newComment = await tx.comment.create({
@@ -43,6 +45,8 @@ export async function POST(
           content,
           authorId: userId,
           projectId: id,
+          name: userName,
+          email: userEmail,
         },
       });
 
