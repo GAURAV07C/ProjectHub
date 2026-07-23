@@ -7,6 +7,7 @@ import { LoginSchema } from "@/schemas/AuthSchema";
 import { getUserByEmail } from "@/data/user";
 // Notice this is only an object, not a full Auth.js instance
 export default {
+  trustHost: true,
   providers: [
     Github({
       clientId: process.env.AUTH_GITHUB_ID,
