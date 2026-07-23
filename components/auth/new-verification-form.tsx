@@ -3,11 +3,9 @@
 import React, { Suspense, useCallback, useEffect, useState } from "react";
 import CardWrapper from "@/components/auth/card-wrapper";
 import { useSearchParams } from "next/navigation";
-import { newVerification } from "@/actions/new-verification";
 import { BeatLoader } from "react-spinners";
 import FormError from "@/components/form-error";
 import FormSucess from "@/components/form-sucess";
-
 
 
 
@@ -33,9 +31,14 @@ const NewVerificationFormContent = () => {
       return;
     }
 
-    newVerification(token)
+    fetch("/api/auth/verify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token }),
+    })
+      .then((res) => res.json())
       .then((data) => {
-        setSucess(data.sucess);
+        setSucess(data.success);
         setError(data.error);
       })
       .catch(() => {

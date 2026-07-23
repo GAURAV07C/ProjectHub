@@ -19,7 +19,6 @@ import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import FormError from "@/components/form-error";
 import FormSucess from "@/components/form-sucess";
-import { newPassword } from "@/actions/new-password";
 
 const NewPasswordForm = () => {
   return (
@@ -49,10 +48,19 @@ const NewPasswordFormContent = () => {
     setSucess("");
 
     startTransition(() => {
-      newPassword(values, token).then((data) => {
-        setError(data?.error);
-        setSucess(data?.sucess);
-      });
+      fetch("/api/auth/new-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: values.password, token }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          setError(data?.error);
+          setSucess(data?.success);
+        })
+        .catch(() => {
+          setError("Something went wrong");
+        });
     });
   };
 

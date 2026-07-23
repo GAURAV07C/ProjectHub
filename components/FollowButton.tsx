@@ -3,10 +3,8 @@
 import { useState } from "react";
 import { Button } from "./ui/button";
 import { Loader2Icon } from "lucide-react";
-import { toggleFollowButton } from "@/data/user";
 import toast from "react-hot-toast";
-// import toast from "react-hot-toast";
-// import { toggleFollow } from "@/actions/user.action";
+
 interface FollowButtonProps {
   userId: string;
   targetId: string;
@@ -16,14 +14,21 @@ function FollowButton({ targetId, userId }: FollowButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleFollow = async () => {
-    
     setIsLoading(true);
 
     try {
-      await toggleFollowButton(targetId, userId);
+      const res = await fetch("/api/follow", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ targetUserId: targetId }),
+      });
+      if (res.ok) {
         toast.success("User followed successfully");
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
+      } else {
+        const data = await res.json();
+        toast.error(data.error || "Error following user");
+      }
+    } catch {
       toast.error("Error following user");
     } finally {
       setIsLoading(false);

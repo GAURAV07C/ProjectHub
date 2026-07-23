@@ -1,13 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import {
-  createComment,
-  deleteProjects,
-  type getProjects,
-  toggleLike,
-  deleteComment,
-} from "@/actions/projectAction";
 import toast from "react-hot-toast";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -28,12 +21,7 @@ import { Separator } from "@/components/ui/separator";
 import { motion } from "framer-motion";
 
 import { DeleteAlertDialog } from "@/components/projects/DeleteButton";
-import { getUserByUserName } from "@/data/user";
-
-type User = Awaited<ReturnType<typeof getUserByUserName>>;
-
-type Projects = Awaited<ReturnType<typeof getProjects>>;
-type Project = Projects[number];
+import { User, Project } from "@/types";
 
 const ProjectCard = ({
   project,
@@ -63,7 +51,10 @@ const ProjectCard = ({
     setHasLiked((prev) => !prev);
     setOptimisticLiked((prev) => prev + (hasLiked ? -1 : 1));
     try {
-      await toggleLike(project.id, userId);
+      const res = await fetch(`/api/projects/${project.id}/like`, {
+        method: "POST",
+      });
+      if (!res.ok) throw new Error();
     } catch {
       setOptimisticLiked(project._count.likes);
       setHasLiked(project.likes.some((like) => like.userId === userId));
@@ -76,10 +67,16 @@ const ProjectCard = ({
     if (!newComment.trim() || isCommenting) return;
     setIsCommenting(true);
     try {
-      const result = await createComment(project.id, newComment, userId);
-      if (result?.success) {
+      const res = await fetch(`/api/projects/${project.id}/comments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: newComment }),
+      });
+      if (res.ok) {
         toast.success("Comment posted successfully");
         setNewComment("");
+      } else {
+        toast.error("Error commenting on project");
       }
     } catch {
       toast.error("Error commenting on project");
@@ -93,12 +90,14 @@ const ProjectCard = ({
 
     try {
       setIsCommentDeleting(true);
-      const result = await deleteComment(commentId, userId);
-      if (result?.success) {
+      const res = await fetch(`/api/comments/${commentId}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
         toast.success("Comment deleted successfully");
-        // Ideally, update the UI state to remove the deleted comment
       } else {
-        throw new Error(result.error);
+        const data = await res.json();
+        throw new Error(data.error);
       }
     } catch {
       toast.error("Failed to delete comment");
@@ -111,9 +110,15 @@ const ProjectCard = ({
     if (isDeleting) return;
     try {
       setIsDeleting(true);
-      const result = await deleteProjects(project.id, userId);
-      if (result.success) toast.success("Project deleted successfully");
-      else throw new Error(result.error);
+      const res = await fetch(`/api/projects/${project.id}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        toast.success("Project deleted successfully");
+      } else {
+        const data = await res.json();
+        throw new Error(data.error);
+      }
     } catch {
       toast.error("Failed to delete post");
     } finally {

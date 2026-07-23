@@ -1,11 +1,14 @@
-import { getProjects } from "@/actions/projectAction";
 import ProjectCard from "@/components/projects/projectCard";
 import WhoToFollow from "@/components/WhoRoFollow";
 import { auth } from "@/lib/auth";
 import React from "react";
+import { Project } from "@/types";
 
 const Feed = async () => {
-  const projects = await getProjects();
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/projects`, {
+    cache: "no-store",
+  });
+  const projects: Project[] = await res.json();
 
   if (!Array.isArray(projects)) {
     return <div>Error loading projects.</div>;
@@ -23,7 +26,7 @@ const Feed = async () => {
     bio: session?.user?.bio ?? null,
     location: session?.user?.location ?? null,
     website: session?.user?.website ?? null,
-    createdAt: new Date(), // Add the createdAt property
+    createdAt: new Date(),
     _count: {
       projects: 0,
       following: 0,
@@ -35,7 +38,6 @@ const Feed = async () => {
   };
 
   if (!currentUser) return null;
-
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-10 gap-6">

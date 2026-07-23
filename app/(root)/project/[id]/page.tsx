@@ -1,16 +1,18 @@
-import { getProjectById } from "@/actions/projectAction";
 import { Boxes } from "@/components/ui/background-boxes";
 import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CalendarIcon } from "lucide-react";
+import { Project } from "@/types";
 
 const ProjectPage = async ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params;
 
-  // Fetch the project data using the project ID
-  const response = await getProjectById(id);
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/projects/${id}`, {
+    cache: "no-store",
+  });
+  const response = await res.json();
 
   if (!response.success || !response.project) {
     return (
@@ -22,7 +24,11 @@ const ProjectPage = async ({ params }: { params: Promise<{ id: string }> }) => {
     );
   }
 
-  const project = response.project;
+  const project = response.project as Project & {
+    authorId: string;
+    authorName: string;
+    authorImage: string;
+  };
 
   return (
     <div className="min-h-screen  to-white">

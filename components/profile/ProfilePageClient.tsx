@@ -1,16 +1,7 @@
 "use client";
 
-import React, { useEffect } from "react";
-
-import {
-  getUserByUserName,
-  toggleFollowButton,
-  getUserById,
-  isFollowing,
-} from "@/data/user";
-
-import { getProjectsByUserId } from "@/actions/projectAction";
-
+import React, { useEffect as clientUseEffect } from "react";
+import toast from "react-hot-toast";
 import {
   Dialog,
   DialogContent,
@@ -18,21 +9,23 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-
-import { useState } from "react";
-import toast from "react-hot-toast";
-
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import ProfileCard from "./ProfileCard";
 import { formatDistanceToNow } from "date-fns";
+import { User, Project } from "@/types";
 
-type User = Awaited<ReturnType<typeof getUserByUserName>>;
-type Projects = Awaited<ReturnType<typeof getProjectsByUserId>>;
+interface ProfilePageClientProps {
+  user: NonNullable<User>;
+  projects: Project[];
+  likedprojects: Project[];
+  isFollowing: boolean;
+  currentUserId: string;
+  currentUser: NonNullable<User>;
+}
 
 interface ProfilePageClientProps {
   user: NonNullable<User>;
@@ -79,12 +72,17 @@ const ProfilePageClient: React.FC<ProfilePageClientProps> = ({
 
     try {
       setIsUpdatingFollow(true);
-      await toggleFollowButton(targetId, currentUserId);
-
-      // Fetch updated user data
-      setIsFollowing(!isFollowings);
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
+      const res = await fetch("/api/follow", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ targetUserId: targetId }),
+      });
+      if (res.ok) {
+        setIsFollowing(!isFollowings);
+      } else {
+        toast.error("Failed to update follow status");
+      }
+    } catch {
       toast.error("Failed to update follow status");
     } finally {
       setIsUpdatingFollow(false);
@@ -96,13 +94,20 @@ const ProfilePageClient: React.FC<ProfilePageClientProps> = ({
       const fetchedFollowers = await Promise.all(
         user.followers.map(async (followerUser) => {
           setFollowerUsersCreatedAt(followerUser.createdAt);
-          const isUserFollow = await isFollowing(
-            followerUser.followerId,
-            currentUserId
-          );
-          setIsFollowedUser(isUserFollow);
+          try {
+            const isUserFollowRes = await fetch(
+              `/api/follow/status?targetUserId=${followerUser.followerId}`
+            );
+            const { isFollowing: isFollow } = await isUserFollowRes.json();
+            setIsFollowedUser(isFollow);
+          } catch {
+            setIsFollowedUser(false);
+          }
           setFollowerUsersCreatedAt(followerUser.createdAt);
-          const getFollowerUser = await getUserById(followerUser.followerId);
+          const userRes = await fetch(
+            `/api/users/${followerUser.followerId}`
+          );
+          const getFollowerUser = await userRes.json();
           return getFollowerUser;
         })
       );
@@ -122,8 +127,10 @@ const ProfilePageClient: React.FC<ProfilePageClientProps> = ({
       const fetchFollowings = await Promise.all(
         user.following.map(async (followingUser) => {
           setFollowingUsersCreatedAt(followingUser.createdAt);
-          const getfollowingUser = await getUserById(followingUser.followingId);
-
+          const userRes = await fetch(
+            `/api/users/${followingUser.followingId}`
+          );
+          const getfollowingUser = await userRes.json();
           return getfollowingUser;
         })
       );

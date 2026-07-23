@@ -1,15 +1,11 @@
 import React from "react";
-import {
-  getProjectsByUserId,
-  getUserLikedProjects,
-  // getUserProjects
-} from "@/actions/projectAction";
 import { notFound } from "next/navigation";
 import { isFollowing, getUserByUserName } from "@/data/user";
 
 import { auth } from "@/lib/auth";
 
 import ProfilePageClient from "@/components/profile/ProfilePageClient";
+import { Project, User } from "@/types";
 
 
 export async function generateMetadata({
@@ -35,15 +31,14 @@ const page = async ({ params }: { params: Promise<{ userName: string }> }) => {
   if (!user) {
     return notFound();
   }
- 
+
   const userId = session?.user?.id ?? "";
-  // Fetch all data concurrently
-  const [projects, likedprojects, isCurrentFollowing] = await Promise.all([
-    getProjectsByUserId(user.id),
-    getUserLikedProjects(user.id),
-    isFollowing(user.id, userId as string),
-    
-  ]);
+  const projectsRes = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/projects/user/${user.id}`);
+  const likedprojectsRes = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/projects/user/${user.id}/liked`);
+
+  const projects: Project[] = await projectsRes.json();
+  const likedprojects: Project[] = await likedprojectsRes.json();
+  const isCurrentFollowing = await isFollowing(user.id, userId as string);
 
   const currentUser = {
     ...session?.user,
@@ -55,7 +50,7 @@ const page = async ({ params }: { params: Promise<{ userName: string }> }) => {
     bio: session?.user?.bio ?? null,
     location: session?.user?.location ?? null,
     website: session?.user?.website ?? null,
-    createdAt: new Date(), // Add the createdAt property
+    createdAt: new Date(),
     _count: {
       projects: 0,
       following: 0,
@@ -72,7 +67,7 @@ const page = async ({ params }: { params: Promise<{ userName: string }> }) => {
     <div>
       <ProfilePageClient
         user={user}
-        projects={projects} // Extracting projects from response
+        projects={projects}
         likedprojects={likedprojects}
         isFollowing={isCurrentFollowing}
         currentUserId={userId}
@@ -83,7 +78,3 @@ const page = async ({ params }: { params: Promise<{ userName: string }> }) => {
 };
 
 export default page;
-
-
-
-

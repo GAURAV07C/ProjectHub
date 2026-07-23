@@ -11,7 +11,7 @@ export const generatePasswordToken = async (email: string) => {
   const existingToken = await getPasswordResetTokenByEmail(email);
 
   if (existingToken) {
-    await prisma.verificationToken.delete({
+    await prisma.passwordResetToken.delete({
       where: {
         id: existingToken.id,
       },

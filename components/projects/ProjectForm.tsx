@@ -18,7 +18,6 @@ import {
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import MDEditor from "@uiw/react-md-editor";
-import { createProject } from "@/actions/projectAction";
 import FormError from "@/components/form-error";
 import FormSuccess from "@/components/form-sucess";
 import { Button } from "@/components/ui/button";
@@ -27,7 +26,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 const ProjectForm = () => {
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
-  const [isPending, startTransition] = useTransition();
+  const [isPending, setIsPending] = useState(false);
 
   const form = useForm<z.infer<typeof projectSchema>>({
     resolver: zodResolver(projectSchema),
@@ -37,23 +36,36 @@ const ProjectForm = () => {
       details: "",
       imageurl: "",
       title: "",
-      Link:"",
+      Link: "",
     },
   });
 
   const onSubmit = async (values: z.infer<typeof projectSchema>) => {
     setError("");
     setSuccess("");
+    setIsPending(true);
 
-    startTransition(() => {
-      createProject(values).then((data) => {
-        setError(data?.error);
-        setSuccess(data?.sucess);
-        if (data?.sucess) {
-          form.reset(); // Reset the form after successful submission
-        }
+    try {
+      const res = await fetch("/api/projects", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
       });
-    });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || "Failed to create project");
+        return;
+      }
+
+      setSuccess(data.success);
+      form.reset();
+    } catch {
+      setError("Something went wrong");
+    } finally {
+      setIsPending(false);
+    }
   };
 
   return (

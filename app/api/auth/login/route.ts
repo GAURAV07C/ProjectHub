@@ -1,0 +1,81 @@
+import { NextResponse } from "next/server";
+import { LoginSchema } from "@/schemas/AuthSchema";
+import { getUserByEmail } from "@/data/user";
+import { AuthError } from "next-auth";
+import { signIn } from "@/lib/auth";
+import { getVerificationTokenByToken } from "@/data/verification-token";
+import { generateVerificationToken } from "@/lib/tokens";
+import { sendVerificationEmail } from "@/lib/mail";
+
+export async function POST(request: Request) {
+  try {
+    const body = await request.json();
+    const validatedFields = LoginSchema.safeParse(body);
+
+    if (!validatedFields.success) {
+      return NextResponse.json(
+        { error: "Invalid fields!" },
+        { status: 400 }
+      );
+    }
+
+    const { email, password } = validatedFields.data;
+
+    const existingUser = await getUserByEmail(email);
+
+    if (!existingUser || !existingUser.email || !existingUser.password) {
+      return NextResponse.json(
+        { error: "Email does not exist!" },
+        { status: 400 }
+      );
+    }
+
+    if (!existingUser.emailVerified) {
+      const verficationToken = await generateVerificationToken(
+        existingUser.email
+      );
+
+      await sendVerificationEmail(
+        verficationToken.email,
+        verficationToken.token
+      );
+
+      return NextResponse.json(
+        { success: "Confirmation email Sent!" },
+        { status: 200 }
+      );
+    }
+
+    await signIn("credentials", {
+      email,
+      password,
+      redirectTo: "/feed",
+    });
+
+    return NextResponse.json(
+      { success: "Login successful" },
+      { status: 200 }
+    );
+  } catch (error) {
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case "CredentialsSignin":
+          return NextResponse.json(
+            { error: "Invalid credentials!" },
+            { status: 400 }
+          );
+        default:
+          return NextResponse.json(
+            { error: "Something went wrong!" },
+            { status: 400 }
+          );
+      }
+    }
+
+    console.error("Login error:", error);
+    return NextResponse.json(
+      { error: "Something went wrong" },
+      { status: 500 }
+    );
+  }
+}

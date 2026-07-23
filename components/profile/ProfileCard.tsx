@@ -14,15 +14,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-
-import { getUserByUserName, updateProfile } from "@/data/user";
 import toast from "react-hot-toast";
 import LoginButton from "../auth/login-button";
-import { getProjectsByUserId } from "@/actions/projectAction";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+import { User, Project } from "@/types";
 
-type User = Awaited<ReturnType<typeof getUserByUserName>>;
-type Projects = Awaited<ReturnType<typeof getProjectsByUserId>>;
+import {
+  CalendarIcon,
+  EditIcon,
+  FileTextIcon,
+  HeartIcon,
+  LinkIcon,
+  MapPinIcon,
+} from "lucide-react";
+import ProjectCard from "../projects/projectCard";
 
 interface ProfileCardProps {
   user: NonNullable<User>;
@@ -72,15 +77,27 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
   });
 
   const handleEditSubmit = async () => {
-    const formData = new FormData();
-    Object.entries(editForm).forEach(([key, value]) => {
-      formData.append(key, value);
-    });
-
-    const result = await updateProfile(formData, user?.id);
-    if (result.success) {
-      setShowEditDialog(false);
-      toast.success("Profile updated successfully");
+    try {
+      const res = await fetch("/api/profile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: editForm.name,
+          bio: editForm.bio,
+          location: editForm.location,
+          website: editForm.website,
+          userId: user?.id,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setShowEditDialog(false);
+        toast.success("Profile updated successfully");
+      } else {
+        toast.error(data.error || "Failed to update profile");
+      }
+    } catch {
+      toast.error("Failed to update profile");
     }
   };
 

@@ -13,20 +13,17 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Suspense, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useSearchParams } from "next/navigation";
 import CardWrapper from "@/components/auth/card-wrapper";
 import { Button } from "@/components/ui/button";
 import FormError from "@/components/form-error";
 import FormSucess from "@/components/form-sucess";
-import { login } from "@/actions/authAction";
 import Link from "next/link";
 
 const LoginForm = () => {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <LoginFormContent />
-    </Suspense>
+    <LoginFormContent />
   );
 };
 
@@ -38,7 +35,8 @@ const LoginFormContent = () => {
       : "";
   const [error, setError] = useState<string | undefined>("");
   const [sucess, setSucess] = useState<string | undefined>("");
-  const [isPending, startTransition] = useTransition();
+  const [isPending, setIsPending] = useState(false);
+
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
@@ -47,16 +45,28 @@ const LoginFormContent = () => {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof LoginSchema>) => {
+  const onSubmit = async (values: z.infer<typeof LoginSchema>) => {
     setError("");
     setSucess("");
+    setIsPending(true);
 
-    startTransition(() => {
-      login(values).then((data) => {
-        setError(data?.error);
-        setSucess(data?.sucess);
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
       });
-    });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error);
+        return;
+      }
+      window.location.href = "/feed";
+    } catch {
+      setError("Something went wrong");
+    } finally {
+      setIsPending(false);
+    }
   };
 
   return (

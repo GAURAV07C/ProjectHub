@@ -18,12 +18,12 @@ import CardWrapper from "@/components/auth/card-wrapper";
 import { Button } from "@/components/ui/button";
 import FormError from "@/components/form-error";
 import FormSucess from "@/components/form-sucess";
-import { register } from "@/actions/authAction";
 
 const RegisterForm = () => {
   const [error, setError] = useState<string | undefined>("");
   const [sucess, setSucess] = useState<string | undefined>("");
-  const [isPending, startTransition] = useTransition();
+  const [isPending, setIsPending] = useState(false);
+
   const form = useForm<z.infer<typeof RegisterSchema>>({
     resolver: zodResolver(RegisterSchema),
     defaultValues: {
@@ -34,16 +34,29 @@ const RegisterForm = () => {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
+  const onSubmit = async (values: z.infer<typeof RegisterSchema>) => {
     setError("");
     setSucess("");
+    setIsPending(true);
 
-    startTransition(() => {
-      register(values).then((data) => {
-        setError(data?.error);
-        setSucess(data?.sucess);
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
       });
-    });
+
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error);
+        return;
+      }
+      setSucess(data.success);
+    } catch {
+      setError("Something went wrong");
+    } finally {
+      setIsPending(false);
+    }
   };
 
   return (

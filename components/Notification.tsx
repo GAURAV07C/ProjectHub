@@ -3,10 +3,6 @@
 
 import React, { useEffect, useState } from "react";
 import { NotificationsSkeleton } from "./NotificationSkelton";
-import {
-  getNotification,
-  markedNoitificationAsRead,
-} from "@/actions/notification";
 import toast from "react-hot-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { ScrollArea } from "./ui/scroll-area";
@@ -14,10 +10,9 @@ import { Avatar, AvatarImage } from "./ui/avatar";
 import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
 import { HeartIcon, MessageCircleIcon, UserPlusIcon } from "lucide-react";
+import { Notification } from "@/types";
 
-type Notifications = Awaited<ReturnType<typeof getNotification>>;
-
-type Notification = Notifications[number];
+type Notifications = Notification[];
 
 
 const getNotificationIcon = (type: string) => {
@@ -44,13 +39,19 @@ const NotificationComponent = ({ userId }: { userId: string }) => {
       setIsLoading(true);
 
       try {
-        const data = await getNotification(userId);
+        const res = await fetch("/api/notifications");
+        const data = await res.json();
         setNotifications(data);
 
-        const unreadsIds = data.filter((n) => !n.read).map((n) => n.id);
+        const unreadsIds = data.filter((n: Notification) => !n.read).map((n: Notification) => n.id);
 
-        if (unreadsIds.length > 0)
-          await markedNoitificationAsRead(userId, unreadsIds);
+        if (unreadsIds.length > 0) {
+          await fetch("/api/notifications", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ notificationIds: unreadsIds }),
+          });
+        }
       } catch (error) {
         toast.error("Failed to fetch notification ");
         console.log(error);
