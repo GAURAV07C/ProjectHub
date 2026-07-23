@@ -15,8 +15,6 @@ const WhoRoFollow = async () => {
     return null;
   }
 
-  
-
   return (
     <Card>
       <CardHeader>
@@ -48,7 +46,7 @@ const WhoRoFollow = async () => {
                   </p>
                 </div>
               </div>
-              <FollowButton targetId={user.id} userId={id} />
+              <FollowButton targetId={user.id} />
             </div>
           ))}
         </div>

@@ -6,11 +6,10 @@ import { Loader2Icon } from "lucide-react";
 import toast from "react-hot-toast";
 
 interface FollowButtonProps {
-  userId: string;
   targetId: string;
 }
 
-function FollowButton({ targetId, userId }: FollowButtonProps) {
+function FollowButton({ targetId }: FollowButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleFollow = async () => {

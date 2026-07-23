@@ -5,7 +5,7 @@ import { isFollowing, getUserByUserName } from "@/data/user";
 import { auth } from "@/lib/auth";
 
 import ProfilePageClient from "@/components/profile/ProfilePageClient";
-import { Project, User } from "@/types";
+import { Project } from "@/types";
 
 
 export async function generateMetadata({
@@ -50,6 +50,7 @@ const page = async ({ params }: { params: Promise<{ userName: string }> }) => {
     bio: session?.user?.bio ?? null,
     location: session?.user?.location ?? null,
     website: session?.user?.website ?? null,
+    emailVerified: null,
     createdAt: new Date(),
     _count: {
       projects: 0,

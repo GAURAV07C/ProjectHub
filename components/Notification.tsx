@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -11,9 +10,6 @@ import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
 import { HeartIcon, MessageCircleIcon, UserPlusIcon } from "lucide-react";
 import { Notification } from "@/types";
-
-type Notifications = Notification[];
-
 
 const getNotificationIcon = (type: string) => {
   switch (type) {
@@ -30,7 +26,7 @@ const getNotificationIcon = (type: string) => {
 
 
 
-const NotificationComponent = ({ userId }: { userId: string }) => {
+const NotificationComponent = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 

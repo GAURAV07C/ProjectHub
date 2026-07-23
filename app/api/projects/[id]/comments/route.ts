@@ -7,7 +7,8 @@ export async function POST(
 ) {
   try {
     const { id } = await context.params;
-    const session = (await import("@/lib/auth")).auth();
+    const { auth } = await import("@/lib/auth");
+    const session = await auth();
 
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -34,21 +35,23 @@ export async function POST(
       );
     }
 
+    const userId = session.user.id;
+
     const [comment] = await prisma.$transaction(async (tx) => {
       const newComment = await tx.comment.create({
         data: {
           content,
-          authorId: session.user.id,
+          authorId: userId,
           projectId: id,
         },
       });
 
-      if (project.authorId !== session.user.id) {
+      if (project.authorId !== userId) {
         await tx.notification.create({
           data: {
             type: "COMMENT",
             userId: project.authorId,
-            creatorId: session.user.id,
+            creatorId: userId,
             projectId: id,
             commentId: newComment.id,
           },

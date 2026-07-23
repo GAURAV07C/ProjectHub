@@ -30,6 +30,7 @@ export const getUserByUserName = async (userName: string) => {
         location: true,
         website: true,
         email: true,
+        emailVerified: true,
         createdAt: true,
         followers: true,
         following: true,

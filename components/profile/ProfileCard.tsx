@@ -37,23 +37,13 @@ interface ProfileCardProps {
   setShowEditDialog: (show: boolean) => void;
   showEditDialog: boolean;
 
-  likedprojects: Projects;
-  projects: Projects;
+  likedprojects: Project[];
+  projects: Project[];
   isUpdatingFollow: boolean;
   setIsModalOpen: (open: boolean) => void;
   setActiveTab: Dispatch<SetStateAction<"followers" | "following">>;
   isFollowings: boolean;
 }
-
-import {
-  CalendarIcon,
-  EditIcon,
-  FileTextIcon,
-  HeartIcon,
-  LinkIcon,
-  MapPinIcon,
-} from "lucide-react";
-import ProjectCard from "../projects/projectCard";
 
 const ProfileCard: React.FC<ProfileCardProps> = ({
   user,

@@ -1,9 +1,10 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
-export async function GET(req: Request) {
+export async function GET() {
   try {
-    const session = (await import("@/lib/auth")).auth();
+    const { auth } = await import("@/lib/auth");
+    const session = await auth();
     const userId = session?.user?.id;
 
     if (!userId) {
@@ -50,7 +51,8 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    const session = (await import("@/lib/auth")).auth();
+    const { auth } = await import("@/lib/auth");
+    const session = await auth();
     const userId = session?.user?.id;
 
     if (!userId) {

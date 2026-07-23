@@ -26,6 +26,7 @@ const Feed = async () => {
     bio: session?.user?.bio ?? null,
     location: session?.user?.location ?? null,
     website: session?.user?.website ?? null,
+    emailVerified: null,
     createdAt: new Date(),
     _count: {
       projects: 0,

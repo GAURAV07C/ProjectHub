@@ -3,7 +3,6 @@ import { LoginSchema } from "@/schemas/AuthSchema";
 import { getUserByEmail } from "@/data/user";
 import { AuthError } from "next-auth";
 import { signIn } from "@/lib/auth";
-import { getVerificationTokenByToken } from "@/data/verification-token";
 import { generateVerificationToken } from "@/lib/tokens";
 import { sendVerificationEmail } from "@/lib/mail";
 

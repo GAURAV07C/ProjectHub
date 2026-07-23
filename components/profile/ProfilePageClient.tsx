@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect as clientUseEffect } from "react";
+import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import {
   Dialog,
@@ -12,7 +12,6 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { useState, useEffect } from "react";
 import Link from "next/link";
 import ProfileCard from "./ProfileCard";
 import { formatDistanceToNow } from "date-fns";
@@ -22,15 +21,6 @@ interface ProfilePageClientProps {
   user: NonNullable<User>;
   projects: Project[];
   likedprojects: Project[];
-  isFollowing: boolean;
-  currentUserId: string;
-  currentUser: NonNullable<User>;
-}
-
-interface ProfilePageClientProps {
-  user: NonNullable<User>;
-  projects: Projects;
-  likedprojects: Projects;
   isFollowing: boolean;
   currentUserId: string;
   currentUser: NonNullable<User>;

@@ -1,16 +1,13 @@
 import LoginForm from "@/components/auth/login-form";
-
-// import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
 const Page = async () => {
-  // const session = await auth();
-  // if (session) redirect(`/user/${session.user?.id}`);
-
   return (
     <div>
-      <LoginForm  />
+      <Suspense fallback={<div>Loading...</div>}>
+        <LoginForm />
+      </Suspense>
     </div>
-    
   );
 };
 
