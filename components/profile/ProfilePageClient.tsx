@@ -2,20 +2,9 @@
 
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import ProfileCard from "./ProfileCard";
-import { formatDistanceToNow } from "date-fns";
 import { User, Project } from "@/types";
+import FollowModal from "./parts/FollowModal";
 
 interface ProfilePageClientProps {
   user: NonNullable<User>;
@@ -30,11 +19,12 @@ const ProfilePageClient: React.FC<ProfilePageClientProps> = ({
   isFollowing: initialIsFollowing,
   likedprojects,
   projects,
-  user,
+  user: initialUser,
   currentUserId,
-  currentUser,
+  currentUser: initialCurrentUser,
 }: ProfilePageClientProps) => {
-  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [user, setUser] = useState(initialUser);
+  const [currentUser] = useState<NonNullable<User>>(initialCurrentUser as NonNullable<User>);
   const [isFollowings, setIsFollowing] = useState(initialIsFollowing);
   const [isUpdatingFollow, setIsUpdatingFollow] = useState(false);
   const [activeTab, setActiveTab] = useState<"followers" | "following">(
@@ -43,15 +33,11 @@ const ProfilePageClient: React.FC<ProfilePageClientProps> = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [searchQuery, setSearchQuery] = useState("");
-
   const [followerUsers, setFollowerUsers] = useState<NonNullable<User>[]>([]);
-
   const [followingUsers, setFollowingUsers] = useState<NonNullable<User>[]>([]);
-
   const [followingUsersCreatedAt, setFollowingUsersCreatedAt] = useState<
     Date | string | number | null
   >();
-
   const [followerUsersCreatedAt, setFollowerUsersCreatedAt] = useState<
     Date | string | number | null
   >();
@@ -68,7 +54,14 @@ const ProfilePageClient: React.FC<ProfilePageClientProps> = ({
         body: JSON.stringify({ targetUserId: targetId }),
       });
       if (res.ok) {
-        setIsFollowing(!isFollowings);
+        setIsFollowing((prev) => !prev);
+        setUser((prev) => ({
+          ...prev,
+          _count: {
+            ...prev._count,
+            followers: prev._count.followers + (isFollowings ? -1 : 1),
+          },
+        }));
       } else {
         toast.error("Failed to update follow status");
       }
@@ -134,6 +127,10 @@ const ProfilePageClient: React.FC<ProfilePageClientProps> = ({
     fetchFollowing();
   }, [user.following]);
 
+  if (!currentUser) return null;
+
+  if (!currentUser) return null;
+
   return (
     <div className="max-w-3xl mx-auto">
       <div className="grid grid-cols-1 gap-6 relative">
@@ -142,156 +139,33 @@ const ProfilePageClient: React.FC<ProfilePageClientProps> = ({
           currentUser={currentUser}
           isFollowing={isFollowings}
           handleFollow={handleFollow}
-          setShowEditDialog={setShowEditDialog}
-          showEditDialog={showEditDialog}
+          setShowEditDialog={() => {}}
+          showEditDialog={false}
           isUpdatingFollow={isUpdatingFollow}
           projects={projects}
           likedprojects={likedprojects}
           setIsModalOpen={setIsModalOpen}
           setActiveTab={setActiveTab}
-          isFollowings
+          isFollowings={isFollowings}
         />
 
-        {/* fllowers following modal */}
-        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-          <DialogContent className="max-w-md">
-            <DialogHeader>
-              <DialogTitle>
-                {activeTab === "followers" ? "Followers" : "Following"}
-              </DialogTitle>
-            </DialogHeader>
-            <Tabs defaultValue={activeTab}>
-              <TabsList className="w-full flex border-b">
-                <TabsTrigger
-                  value="followers"
-                  onClick={() => setActiveTab("followers")}
-                  className="w-1/2 text-center"
-                >
-                  Followers
-                </TabsTrigger>
-                <TabsTrigger
-                  value="following"
-                  onClick={() => setActiveTab("following")}
-                  className="w-1/2 text-center"
-                >
-                  Following
-                </TabsTrigger>
-              </TabsList>
-              <Input
-                placeholder="Search users..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="mt-4"
-              />
-              <TabsContent value="followers" className="mt-4">
-                <div className="flex items-center space-x-4">
-                  {user._count.followers > 0 && (
-                    <div>
-                      {followerUsers.map((getFollowerUser) => (
-                        <div key={getFollowerUser?.id} className="flex">
-                          <Link href={getFollowerUser?.userName || ""}>
-                            <Avatar className="h-12 w-12 border-2 border-primary/10">
-                              <AvatarImage
-                                src={
-                                  getFollowerUser?.name ??
-                                  `https://api.dicebear.com/5.x/initials/svg?seed=${encodeURIComponent(
-                                    getFollowerUser?.name ?? ""
-                                  )}`
-                                }
-                              />
-                            </Avatar>
-                          </Link>
-                          <div className="flex-1">
-                            <Link
-                              href={getFollowerUser?.userName || ""}
-                              className="font-semibold hover:underline"
-                            >
-                              {getFollowerUser?.name}
-                            </Link>
-                            <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                              <span>@{getFollowerUser?.userName}</span>
-                              <span>•</span>
-                              <span>
-                                {followerUsersCreatedAt &&
-                                  formatDistanceToNow(
-                                    new Date(followerUsersCreatedAt)
-                                  )}{" "}
-                                ago
-                              </span>
-                            </div>
-                          </div>
-                          {currentUserId !== getFollowerUser?.id && (
-                            <Button
-                              size="sm"
-                              disabled={isUpdatingFollow}
-                              variant={isFollowedUser ? "outline" : "default"}
-                              onClick={() => {
-                                if (getFollowerUser?.id)
-                                  handleFollow(getFollowerUser.id);
-                              }}
-                            >
-                              {isFollowedUser ? "Unfollow" : "Follow"}
-                            </Button>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </TabsContent>
-
-              <TabsContent value="following" className="mt-4">
-                {followingUsers.map((getfollowingUser) => (
-                  <div key={getfollowingUser.id}>
-                    <div className="flex items-center space-x-4">
-                      <Link href={getfollowingUser.userName || ""}>
-                        <Avatar className="h-12 w-12 border-2 border-primary/10">
-                          <AvatarImage
-                            src={
-                              getfollowingUser.image ??
-                              `https://api.dicebear.com/5.x/initials/svg?seed=${encodeURIComponent(
-                                getfollowingUser.name ?? ""
-                              )}`
-                            }
-                          />
-                        </Avatar>
-                      </Link>
-                      <div className="flex-1">
-                        <Link
-                          href={getfollowingUser.userName || ""}
-                          className="font-semibold hover:underline"
-                        >
-                          {getfollowingUser.name}
-                        </Link>
-                        <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                          <span>@{getfollowingUser.userName}</span>
-                          <span>•</span>
-                          <span>
-                            {formatDistanceToNow(
-                              followingUsersCreatedAt
-                                ? new Date(followingUsersCreatedAt)
-                                : new Date()
-                            )}{" "}
-                            ago
-                          </span>
-                        </div>
-                      </div>
-                      {currentUserId !== getfollowingUser.id && (
-                        <Button
-                          size="sm"
-                          variant={isFollowings ? "outline" : "default"}
-                          onClick={() => handleFollow(getfollowingUser.id)}
-                        >
-                          {isFollowings ? "Unfollow" : "Follow"}
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </TabsContent>
-            </Tabs>
-          </DialogContent>
-        </Dialog>
+        <FollowModal
+          open={isModalOpen}
+          onOpenChange={setIsModalOpen}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          followerUsers={followerUsers}
+          followingUsers={followingUsers}
+          followerUsersCreatedAt={followerUsersCreatedAt}
+          followingUsersCreatedAt={followingUsersCreatedAt}
+          currentUserId={currentUserId}
+          isFollowedUser={isFollowedUser}
+          isUpdatingFollow={isUpdatingFollow}
+          onFollow={handleFollow}
+          user={user}
+        />
       </div>
     </div>
   );

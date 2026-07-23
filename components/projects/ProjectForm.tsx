@@ -8,20 +8,13 @@ import type * as z from "zod";
 
 import {
   Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
 
-import { Input } from "../ui/input";
-import { Textarea } from "../ui/textarea";
-import MDEditor from "@uiw/react-md-editor";
-import FormError from "@/components/form-error";
-import FormSuccess from "@/components/form-sucess";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import ProjectFormField from "./ProjectFormField";
+import FormError from "@/components/form-error";
+import FormSuccess from "@/components/form-sucess";
 
 const ProjectForm = () => {
   const [error, setError] = useState<string | undefined>("");
@@ -69,7 +62,7 @@ const ProjectForm = () => {
   };
 
   return (
-    <Card className="w-full max-w-5xl mx-auto px-">
+    <Card className="w-full max-w-5xl mx-auto">
       <CardHeader>
         <CardTitle className="text-2xl font-bold text-center">
           Create New Project
@@ -79,141 +72,14 @@ const ProjectForm = () => {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="space-y-4">
-              <FormField
-                control={form.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-lg font-semibold">
-                      Title
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        disabled={isPending}
-                        placeholder="Enter your Project title"
-                        className="input-field"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-lg font-semibold">
-                      Description
-                    </FormLabel>
-                    <FormControl>
-                      <Textarea
-                        {...field}
-                        disabled={isPending}
-                        placeholder="Project Description"
-                        className="input-field min-h-[100px]"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
+              <ProjectFormField control={form.control} name="title" label="Title" placeholder="Enter your Project title" disabled={isPending} />
+              <ProjectFormField control={form.control} name="description" label="Description" type="textarea" placeholder="Project Description" disabled={isPending} />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="category"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-lg font-semibold">
-                        Category
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          disabled={isPending}
-                          placeholder="Project category (Next.js, DIY...)"
-                          className="input-field"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="imageurl"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-lg font-semibold">
-                        Image URL
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          disabled={isPending}
-                          placeholder="Project Thumbnail Url"
-                          className="input-field"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <ProjectFormField control={form.control} name="category" label="Category" placeholder="Project category (Next.js, DIY...)" disabled={isPending} />
+                <ProjectFormField control={form.control} name="imageurl" label="Image URL" placeholder="Project Thumbnail Url" disabled={isPending} />
               </div>
-
-              <FormField
-                control={form.control}
-                name="Link"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-lg font-semibold">
-                      Link to the project
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        disabled={isPending}
-                        placeholder="Live project link"
-                        className="input-field"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="details"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-lg font-semibold">
-                      Details
-                    </FormLabel>
-                    <FormControl>
-                      <div
-                        data-color-mode="light"
-                        className="md-editor-container border rounded-lg p-4"
-                      >
-                        <MDEditor
-                          {...field}
-                          height={300}
-                          className="rounded-lg shadow-sm border"
-                          textareaProps={{
-                            placeholder: "Describe your project in detail",
-                          }}
-                          previewOptions={{ disallowedElements: ["style"] }}
-                        />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <ProjectFormField control={form.control} name="Link" label="Link to the project" placeholder="Live project link" disabled={isPending} />
+              <ProjectFormField control={form.control} name="details" label="Details" type="markdown" placeholder="Describe your project in detail" disabled={isPending} />
             </div>
 
             {error && <FormError message={error} />}
