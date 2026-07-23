@@ -45,11 +45,24 @@ export async function POST(request: Request) {
       );
     }
 
-    await signIn("credentials", {
-      email,
-      password,
-      redirectTo: "/feed",
-    });
+    try {
+      await signIn("credentials", {
+        email,
+        password,
+        redirectTo: "/feed",
+      });
+    } catch (error) {
+      if (
+        error &&
+        typeof error === "object" &&
+        "digest" in error &&
+        typeof (error as { digest?: string }).digest === "string" &&
+        (error as { digest?: string }).digest!.startsWith("NEXT_REDIRECT")
+      ) {
+        return NextResponse.json({ success: true }, { status: 200 });
+      }
+      throw error;
+    }
 
     return NextResponse.json(
       { success: "Login successful" },

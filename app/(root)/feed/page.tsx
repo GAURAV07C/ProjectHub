@@ -4,8 +4,15 @@ import { auth } from "@/lib/auth";
 import React from "react";
 import { Project } from "@/types";
 
+import { headers } from "next/headers";
+
 const Feed = async () => {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/projects`, {
+  const headersList = await headers();
+  const host = headersList.get("host") || "localhost:3000";
+  const protocol = headersList.get("x-forwarded-proto") || "http";
+  const baseUrl = `${protocol}://${host}`;
+
+  const res = await fetch(`${baseUrl}/api/projects`, {
     cache: "no-store",
   });
   const projects: Project[] = await res.json();

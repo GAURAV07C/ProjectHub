@@ -1,3 +1,4 @@
+import { headers } from "next/headers";
 import { Boxes } from "@/components/ui/background-boxes";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,7 +10,12 @@ import { Project } from "@/types";
 const ProjectPage = async ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params;
 
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/projects/${id}`, {
+  const headersList = await headers();
+  const host = headersList.get("host") || "localhost:3000";
+  const protocol = headersList.get("x-forwarded-proto") || "http";
+  const baseUrl = `${protocol}://${host}`;
+
+  const res = await fetch(`${baseUrl}/api/projects/${id}`, {
     cache: "no-store",
   });
   const response = await res.json();

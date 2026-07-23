@@ -1,3 +1,4 @@
+import { headers } from "next/headers";
 import React from "react";
 import { notFound } from "next/navigation";
 import { isFollowing, getUserByUserName } from "@/data/user";
@@ -33,8 +34,14 @@ const page = async ({ params }: { params: Promise<{ userName: string }> }) => {
   }
 
   const userId = session?.user?.id ?? "";
-  const projectsRes = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/projects/user/${user.id}`);
-  const likedprojectsRes = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/projects/user/${user.id}/liked`);
+
+  const headersList = await headers();
+  const host = headersList.get("host") || "localhost:3000";
+  const protocol = headersList.get("x-forwarded-proto") || "http";
+  const baseUrl = `${protocol}://${host}`;
+
+  const projectsRes = await fetch(`${baseUrl}/api/projects/user/${user.id}`);
+  const likedprojectsRes = await fetch(`${baseUrl}/api/projects/user/${user.id}/liked`);
 
   const projects: Project[] = await projectsRes.json();
   const likedprojects: Project[] = await likedprojectsRes.json();

@@ -6,17 +6,6 @@ import { prisma } from "@/lib/prisma";
 
 import { getUserById } from "@/data/user";
 
-async function testprisma() {
-  try {
-    await prisma.$connect();
-    console.log("Database connected successfully!");
-  } catch (error) {
-    console.error("Database connection failed:", error);
-  }
-}
-
-testprisma();
-
 export const { handlers, signIn, signOut, auth } = NextAuth({
   pages: {
     signIn: "/auth/login",
