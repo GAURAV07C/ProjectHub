@@ -29,10 +29,12 @@ export async function POST(request: Request) {
 
     const passwordResetToken = await generatePasswordToken(email);
 
-    await sendPasswordResendEmail(
+    console.log("Sending password reset email to:", email);
+    const emailResult = await sendPasswordResendEmail(
       passwordResetToken.email,
       passwordResetToken.token
     );
+    console.log("Password reset email result:", emailResult);
 
     return NextResponse.json(
       { success: "Reset email sent!" },

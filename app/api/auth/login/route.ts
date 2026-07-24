@@ -34,13 +34,15 @@ export async function POST(request: Request) {
         existingUser.email
       );
 
-      await sendVerificationEmail(
+      console.log("Sending verification email to:", existingUser.email);
+      const emailResult = await sendVerificationEmail(
         verficationToken.email,
         verficationToken.token
       );
+      console.log("Verification email result:", emailResult);
 
       return NextResponse.json(
-        { success: "Confirmation email Sent!" },
+        { success: "Confirmation email Sent!", emailVerified: false },
         { status: 200 }
       );
     }
@@ -59,13 +61,13 @@ export async function POST(request: Request) {
         typeof (error as { digest?: string }).digest === "string" &&
         (error as { digest?: string }).digest!.startsWith("NEXT_REDIRECT")
       ) {
-        return NextResponse.json({ success: true }, { status: 200 });
+        return NextResponse.json({ success: true, emailVerified: true }, { status: 200 });
       }
       throw error;
     }
 
     return NextResponse.json(
-      { success: "Login successful" },
+      { success: "Login successful", emailVerified: true },
       { status: 200 }
     );
   } catch (error) {

@@ -61,6 +61,10 @@ const LoginFormContent = () => {
         setError(data.error);
         return;
       }
+      if (data.emailVerified === false) {
+        setSucess(data.success);
+        return;
+      }
       window.location.href = "/feed";
     } catch {
       setError("Something went wrong");

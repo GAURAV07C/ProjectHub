@@ -25,19 +25,26 @@ export const sendPasswordResendEmail = async (email: string, token: string) => {
         style="display: inline-block; padding: 10px 20px; color: white; background-color: #007bff; text-decoration: none; border-radius: 5px; font-weight: bold;">
         Reset Password
       </a>
-      <p>If you didn’t request this, you can safely ignore this email.</p>
+      <p>If you didn't request this, you can safely ignore this email.</p>
       <hr style="margin-top: 20px;"/>
       <p style="font-size: 12px; color: #777;">If you have any questions, contact our support team.</p>
     </div>
   `;
 
-  //  await resend.emails.send({
-  await transporter.sendMail({
-    from: process.env.FROM_EMAIL, //"onboarding@resend.dev",
-    to: email,
-    subject: "🔒 Reset Your Password",
-    html: htmlContent,
-  });
+  try {
+    //  await resend.emails.send({
+    const result = await transporter.sendMail({
+      from: process.env.FROM_EMAIL, //"onboarding@resend.dev",
+      to: email,
+      subject: "🔒 Reset Your Password",
+      html: htmlContent,
+    });
+    console.log("Password reset email sent:", result.messageId);
+    return result;
+  } catch (error) {
+    console.error("Failed to send password reset email:", error);
+    throw error;
+  }
 };
 
 export const sendVerificationEmail = async (email: string, token: string) => {
@@ -58,10 +65,17 @@ export const sendVerificationEmail = async (email: string, token: string) => {
   `;
   
 
-  await transporter.sendMail({
-    from: process.env.FROM_EMAIL, //"onboarding@resend.dev",
-    to: email,
-    subject: "✅ Verify Your Email Address",
-    html: htmlContent,
-  });
+  try {
+    const result = await transporter.sendMail({
+      from: process.env.FROM_EMAIL, //"onboarding@resend.dev",
+      to: email,
+      subject: "✅ Verify Your Email Address",
+      html: htmlContent,
+    });
+    console.log("Verification email sent:", result.messageId);
+    return result;
+  } catch (error) {
+    console.error("Failed to send verification email:", error);
+    throw error;
+  }
 };

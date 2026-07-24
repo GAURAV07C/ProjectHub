@@ -45,13 +45,15 @@ export async function POST(request: Request) {
 
     const verficationToken = await generateVerificationToken(email);
 
-    await sendVerificationEmail(
+    console.log("Generating verification token for:", email);
+    const emailResult = await sendVerificationEmail(
       verficationToken.email,
       verficationToken.token
     );
+    console.log("Verification email result:", emailResult);
 
     return NextResponse.json(
-      { success: "Confirmation email sent" },
+      { success: "Confirmation email sent", messageId: emailResult?.messageId },
       { status: 201 }
     );
   } catch (error) {
