@@ -19,10 +19,11 @@ interface EditProfileDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   user: NonNullable<User>;
-  onSuccess?: () => void;
+  onSuccess?: (updatedUser?: User) => void;
 }
 
 type EditForm = {
+  userName: string;
   name: string;
   bio: string;
   location: string;
@@ -36,6 +37,7 @@ const EditProfileDialog: React.FC<EditProfileDialogProps> = ({
   onSuccess,
 }) => {
   const [editForm, setEditForm] = useState<EditForm>({
+    userName: user.userName || "",
     name: user.name || "",
     bio: user.bio || "",
     location: user.location || "",
@@ -124,6 +126,7 @@ const EditProfileDialog: React.FC<EditProfileDialogProps> = ({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          userName: editForm.userName,
           name: editForm.name,
           bio: editForm.bio,
           location: editForm.location,
@@ -135,7 +138,7 @@ const EditProfileDialog: React.FC<EditProfileDialogProps> = ({
       if (res.ok) {
         onOpenChange(false);
         toast.success("Profile updated successfully");
-        onSuccess?.();
+        onSuccess?.(data.user);
       } else {
         toast.error(data.error || "Failed to update profile");
       }
@@ -155,6 +158,17 @@ const EditProfileDialog: React.FC<EditProfileDialogProps> = ({
           <DialogTitle>Edit Profile</DialogTitle>
         </DialogHeader>
         <div className="space-y-4 py-4">
+          <div className="space-y-2">
+            <Label>Username</Label>
+            <Input
+              name="userName"
+              value={editForm.userName}
+              onChange={(e) =>
+                setEditForm({ ...editForm, userName: e.target.value })
+              }
+              placeholder="Your username"
+            />
+          </div>
           <div className="space-y-2">
             <Label>Name</Label>
             <Input

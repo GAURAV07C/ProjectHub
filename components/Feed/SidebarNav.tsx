@@ -10,6 +10,7 @@ import {
   PlusCircle,
   User,
   LogOut,
+  Settings,
 } from "lucide-react";
 
 interface SidebarNavProps {
@@ -25,6 +26,7 @@ const SidebarNav = ({ userName }: SidebarNavProps) => {
     { href: "/notifications", icon: Bell, label: "Notifications" },
     { href: "/create", icon: PlusCircle, label: "Create" },
     { href: `/${userName}`, icon: User, label: "Profile" },
+    { href: "/settings", icon: Settings, label: "Settings" },
   ];
 
   return (

@@ -186,8 +186,15 @@ const ProfilePageClient: React.FC<ProfilePageClientProps> = ({
         open={isEditDialogOpen}
         onOpenChange={setIsEditDialogOpen}
         user={user}
-        onSuccess={() => {
+        onSuccess={(updatedUser) => {
           setIsEditDialogOpen(false);
+          if (updatedUser) {
+            setUser(updatedUser);
+            setCurrentUser((prev) => ({
+              ...prev,
+              ...updatedUser,
+            }));
+          }
         }}
       />
 
