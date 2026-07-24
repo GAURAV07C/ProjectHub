@@ -5,13 +5,14 @@ import { Avatar, AvatarImage } from "../ui/avatar";
 import { Separator } from "../ui/separator";
 import { auth } from "@/lib/auth";
 import { LinkIcon, MapPinIcon } from "lucide-react";
+import SidebarNav from "./SidebarNav";
 
 const Sidebar = async () => {
   
   const session = await auth();
   const user = session?.user;
   return (
-    <div className="sticky top-20">
+    <div className="w-full">
       <Card>
         <CardContent className="pt-6">
           <div className="flex flex-col items-center text-center">
@@ -77,6 +78,11 @@ const Sidebar = async () => {
                   "No website"
                 )}
               </div>
+            </div>
+            
+            <Separator className="my-4" />
+            <div className="w-full text-left">
+              <SidebarNav userName={user?.userName ?? null} />
             </div>
           </div>
         </CardContent>
