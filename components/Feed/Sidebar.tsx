@@ -1,6 +1,4 @@
-"use client";
-
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Card, CardContent } from "../ui/card";
 import Link from "next/link";
 import { Avatar, AvatarImage } from "../ui/avatar";
@@ -8,46 +6,12 @@ import { Separator } from "../ui/separator";
 import { auth } from "@/lib/auth";
 import { LinkIcon, MapPinIcon } from "lucide-react";
 import SidebarNav from "./SidebarNav";
-import { User } from "@/types";
+import FollowCounts from "./FollowCounts";
 
-const Sidebar = () => {
-  const [user, setUser] = useState<User | null>(null);
-  const [followingCount, setFollowingCount] = useState(0);
-  const [followersCount, setFollowersCount] = useState(0);
-
-  useEffect(() => {
-    let mounted = true;
-    const load = async () => {
-      const session = await auth();
-      const u = session?.user as User | undefined;
-      if (mounted && u) {
-        setUser(u);
-        setFollowingCount(u._count?.following ?? 0);
-        setFollowersCount(u._count?.followers ?? 0);
-      }
-    };
-    load();
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
-  useEffect(() => {
-    const handler = (e: Event) => {
-      const detail = (e as CustomEvent).detail;
-      if (!detail) return;
-      if (detail.isFollowing) {
-        setFollowingCount((c) => c + 1);
-        setFollowersCount((c) => c + 1);
-      } else {
-        setFollowingCount((c) => Math.max(0, c - 1));
-        setFollowersCount((c) => Math.max(0, c - 1));
-      }
-    };
-    window.addEventListener("follow-updated", handler as EventListener);
-    return () => window.removeEventListener("follow-updated", handler as EventListener);
-  }, []);
-
+const Sidebar = async () => {
+   
+  const session = await auth();
+  const user = session?.user;
   if (!user) return null;
 
   return (
@@ -84,17 +48,7 @@ const Sidebar = () => {
 
             <div className="w-full">
               <Separator className="my-4" />
-              <div className="flex justify-between">
-                <div>
-                  <p className="font-medium">{followingCount}</p>
-                  <p className="text-xs text-muted-foreground">Following</p>
-                </div>
-                <Separator orientation="vertical" />
-                <div>
-                  <p className="font-medium">{followersCount}</p>
-                  <p className="text-xs text-muted-foreground">Followers</p>
-                </div>
-              </div>
+              <FollowCounts initialFollowing={user._count?.following ?? 0} initialFollowers={user._count?.followers ?? 0} />
               <Separator className="my-4" />
             </div>
 
