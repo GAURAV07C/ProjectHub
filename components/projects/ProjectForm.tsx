@@ -24,7 +24,10 @@ import { MarkdownEditor } from "@/components/markdown/MarkdownEditor";
 import { Project, Skill } from "@/types";
 
 interface ProjectFormProps {
-  project?: Project;
+  project?: Omit<Partial<Project>, 'createdAt' | 'updatedAt'> & {
+    createdAt?: string;
+    updatedAt?: string;
+  };
   redirectSlug?: string;
   onSuccess?: () => void;
 }
