@@ -1,15 +1,22 @@
 import { headers } from "next/headers";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import ProjectForm from "@/components/projects/ProjectForm";
 import { Project } from "@/types";
+import { auth } from "@/lib/auth";
 
 const EditProjectPage = async ({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) => {
+  const session = await auth();
+  if (!session) {
+    redirect("/auth/login");
+  }
+
   const { id } = await params;
 
   const headersList = await headers();

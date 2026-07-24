@@ -1,28 +1,19 @@
-import { headers } from "next/headers";
-import { notFound } from "next/navigation";
+import { redirect, notFound } from "next/navigation";
 import { auth } from "@/lib/auth";
+import { getUserById } from "@/data/user";
 import SettingsPageClient from "@/components/settings/SettingsPageClient";
 
 const SettingsPage = async () => {
   const session = await auth();
   if (!session?.user?.id) {
-    notFound();
+    redirect("/auth/login");
   }
 
-  const headersList = await headers();
-  const host = headersList.get("host") || "localhost:3000";
-  const protocol = headersList.get("x-forwarded-proto") || "http";
-  const baseUrl = `${protocol}://${host}`;
+  const user = await getUserById(session.user.id);
 
-  const settingsRes = await fetch(`${baseUrl}/api/settings`, {
-    cache: "no-store",
-  });
-
-  if (!settingsRes.ok) {
+  if (!user) {
     notFound();
   }
-
-  const user = await settingsRes.json();
 
   return (
     <div className="max-w-4xl mx-auto">

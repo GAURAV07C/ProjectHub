@@ -1,6 +1,13 @@
+import { redirect } from "next/navigation";
+import { auth } from "@/lib/auth";
 import ProjectForm from "@/components/projects/ProjectForm";
 
-const CreatePage = () => {
+const CreatePage = async () => {
+  const session = await auth();
+  if (!session) {
+    redirect("/auth/login");
+  }
+
   return (
     <div className="min-h-screen bg-[#0A0A0F] text-white">
       <section className="max-w-5xl mx-auto px-4 pt-12 pb-20">

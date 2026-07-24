@@ -3,10 +3,16 @@ import { auth } from "@/lib/auth";
 import React from "react";
 import { Project, User } from "@/types";
 import RightSidebar from "@/components/layout/RightSidebar";
+import { redirect } from "next/navigation";
 
 import { headers } from "next/headers";
 
 const Feed = async () => {
+  const session = await auth();
+  if (!session?.user?.id) {
+    redirect("/auth/login");
+  }
+
   const headersList = await headers();
   const host = headersList.get("host") || "localhost:3000";
   const protocol = headersList.get("x-forwarded-proto") || "http";
@@ -21,31 +27,27 @@ const Feed = async () => {
     return <div>Error loading projects.</div>;
   }
 
-  const session = await auth();
-  const id = session?.user?.id || "";
+  const id = session.user.id;
+  const userCount = session.user._count as { projects?: number; following?: number; followers?: number } | undefined;
   const currentUser = {
-    ...session?.user,
-    userName: session?.user?.userName ?? null,
-    name: session?.user?.name ?? null,
-    id: session?.user?.id ?? "",
-    email: session?.user?.email ?? null,
-    image: session?.user?.image ?? null,
-    bio: session?.user?.bio ?? null,
-    location: session?.user?.location ?? null,
-    website: session?.user?.website ?? null,
+    id: session.user.id,
+    name: session.user.name ?? null,
+    userName: session.user.userName ?? null,
+    email: session.user.email ?? null,
+    image: session.user.image ?? null,
+    bio: session.user.bio ?? null,
+    location: session.user.location ?? null,
+    website: session.user.website ?? null,
     emailVerified: null,
     createdAt: new Date(),
     _count: {
-      projects: 0,
-      following: 0,
-      followers: 0,
-      ...session?.user?._count,
+      projects: userCount?.projects ?? 0,
+      following: userCount?.following ?? 0,
+      followers: userCount?.followers ?? 0,
     },
     followers: [],
     following: [],
   };
-
-  if (!currentUser) return null;
 
   const trendingProjects = [...projects]
     .sort((a, b) => (b._count?.likes || 0) - (a._count?.likes || 0))

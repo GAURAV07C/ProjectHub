@@ -1,6 +1,5 @@
-"use client";
-
-import { useEffect, useState } from "react";
+import { redirect } from "next/navigation";
+import { auth } from "@/lib/auth";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -9,17 +8,14 @@ import { Project } from "@/types";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 
-export default function ProjectsPage() {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
+export default async function ProjectsPage() {
+  const session = await auth();
+  if (!session) {
+    redirect("/auth/login");
+  }
 
-  useEffect(() => {
-    fetch("/api/projects", { next: { revalidate: 3600 } })
-      .then(res => res.json())
-      .then(data => setProjects(Array.isArray(data) ? data : []))
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, []);
+  const res = await fetch("/api/projects", { next: { revalidate: 3600 } });
+  const projects: Project[] = await res.json();
 
   return (
     <div className="min-h-screen bg-[#0A0A0F] text-white">
@@ -37,9 +33,7 @@ export default function ProjectsPage() {
             </p>
           </div>
 
-          {loading ? (
-            <div className="text-center text-white/50 py-20">Loading projects...</div>
-          ) : projects.length === 0 ? (
+          {projects.length === 0 ? (
             <div className="text-center text-white/50 py-20">
               <p className="text-xl mb-2">No projects yet</p>
               <p className="text-sm">Check back soon for new work.</p>

@@ -23,7 +23,10 @@ export default auth((req) => {
 
   const isPublicRoute =
     publicRoutes.includes(nextUrl.pathname) ||
-    /^\/[^\/]+$/.test(nextUrl.pathname);
+    (/^\/[^\/]+$/.test(nextUrl.pathname) &&
+      !["/feed", "/settings", "/projects", "/create", "/notifications"].includes(
+        nextUrl.pathname
+      ));
 
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
 
