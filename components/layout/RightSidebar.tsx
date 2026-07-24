@@ -12,8 +12,15 @@ interface RightSidebarProps {
   suggestedUsers: User[];
 }
 
-const RightSidebar = ({ trendingProjects, suggestedUsers }: RightSidebarProps) => {
+const RightSidebar = ({ trendingProjects, suggestedUsers: initialSuggestedUsers }: RightSidebarProps) => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [suggestedUsers, setSuggestedUsers] = useState<User[]>(initialSuggestedUsers);
+
+  const handleFollowSuccess = (targetId: string, isFollowing: boolean) => {
+    if (isFollowing) {
+      setSuggestedUsers((prev) => prev.filter((u) => u.id !== targetId));
+    }
+  };
 
   return (
     <aside className="w-full">
@@ -72,7 +79,7 @@ const RightSidebar = ({ trendingProjects, suggestedUsers }: RightSidebarProps) =
                     <p className="text-xs text-gray-400 truncate">@{user.userName ?? user.email?.split("@")[0]}</p>
                   </div>
                 </Link>
-                <FollowButton targetId={user.id} />
+                <FollowButton targetId={user.id} onFollowSuccess={handleFollowSuccess} />
               </div>
             ))}
           </div>

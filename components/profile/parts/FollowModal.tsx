@@ -25,7 +25,7 @@ interface FollowModalProps {
   currentUserId: string;
   followedUsersMap: Record<string, boolean>;
   isUpdatingFollow: boolean;
-  onFollow: (targetId: string) => void;
+  onFollow: (targetId: string, currentStatus?: boolean) => void;
   user: NonNullable<User>;
 }
 
@@ -79,7 +79,7 @@ const FollowModal: React.FC<FollowModalProps> = ({
           size="sm"
           disabled={isUpdatingFollow}
           variant={isFollowed ? "outline" : "default"}
-          onClick={() => onFollow(getUser.id)}
+          onClick={() => onFollow(getUser.id, isFollowed)}
         >
           {isFollowed ? "Following" : "Follow"}
         </Button>

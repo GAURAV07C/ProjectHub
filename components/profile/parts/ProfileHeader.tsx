@@ -15,7 +15,7 @@ import { User } from "@/types";
 interface ProfileHeaderProps {
   user: NonNullable<User>;
   currentUser: NonNullable<User>;
-  handleFollow: (targetId: string) => void;
+  handleFollow: (targetId: string, currentStatus?: boolean) => void;
   setShowEditDialog: (show: boolean) => void;
   isUpdatingFollow: boolean;
   isFollowings: boolean;
@@ -86,7 +86,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
               ) : (
                 <Button
                   className="bg-gradient-to-r from-emerald-300 to-blue-500 hover:from-emerald-400 hover:to-blue-600 text-gray-950 font-semibold"
-                  onClick={() => handleFollow(user.id)}
+                  onClick={() => handleFollow(user.id, isFollowings)}
                   disabled={isUpdatingFollow}
                 >
                   {isFollowings ? "Following" : "Follow"}

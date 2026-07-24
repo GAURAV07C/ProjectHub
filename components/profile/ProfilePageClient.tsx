@@ -40,7 +40,7 @@ const ProfilePageClient: React.FC<ProfilePageClientProps> = ({
   const [followingUsers, setFollowingUsers] = useState<NonNullable<User>[]>([]);
   const [followedUsersMap, setFollowedUsersMap] = useState<Record<string, boolean>>({});
 
-  const handleFollow = async (targetId: string) => {
+  const handleFollow = async (targetId: string, currentStatus?: boolean) => {
     if (!currentUser) return;
 
     try {
@@ -51,15 +51,23 @@ const ProfilePageClient: React.FC<ProfilePageClientProps> = ({
         body: JSON.stringify({ targetUserId: targetId }),
       });
       if (res.ok) {
-        const willFollow = !isFollowings;
-        setIsFollowing(willFollow);
+        const isCurrentlyFollowing = currentStatus ?? (targetId === user.id ? isFollowings : (followedUsersMap[targetId] ?? false));
+        const willFollow = !isCurrentlyFollowing;
+
+        if (targetId === user.id) {
+          setIsFollowing(willFollow);
+        }
+
         setUser((prev) => ({
           ...prev,
           _count: {
             ...prev._count,
-            ...(user.id === currentUser.id
+            ...(targetId === user.id
+              ? { followers: prev._count.followers + (willFollow ? 1 : -1) }
+              : {}),
+            ...(user.id === currentUser.id && targetId !== user.id
               ? { following: prev._count.following + (willFollow ? 1 : -1) }
-              : { followers: prev._count.followers + (willFollow ? 1 : -1) }),
+              : {}),
           },
         }));
         setCurrentUser((prev) => ({
@@ -73,6 +81,11 @@ const ProfilePageClient: React.FC<ProfilePageClientProps> = ({
           ...prev,
           [targetId]: willFollow,
         }));
+
+        if (!willFollow) {
+          setFollowerUsers((prev) => prev.filter((u) => u.id !== targetId));
+          setFollowingUsers((prev) => prev.filter((u) => u.id !== targetId));
+        }
       } else {
         toast.error("Failed to update follow status");
       }
