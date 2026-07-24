@@ -43,12 +43,12 @@ export async function POST(request: Request) {
       },
     });
 
-    const verficationToken = await generateVerificationToken(email);
+    const verificationToken = await generateVerificationToken(email);
 
     console.log("Generating verification token for:", email);
     const emailResult = await sendVerificationEmail(
-      verficationToken.email,
-      verficationToken.token
+      verificationToken.email,
+      verificationToken.token
     );
     console.log("Verification email result:", emailResult);
 

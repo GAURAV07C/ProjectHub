@@ -30,14 +30,14 @@ export async function POST(request: Request) {
     }
 
     if (!existingUser.emailVerified) {
-      const verficationToken = await generateVerificationToken(
+      const verificationToken = await generateVerificationToken(
         existingUser.email
       );
 
       console.log("Sending verification email to:", existingUser.email);
       const emailResult = await sendVerificationEmail(
-        verficationToken.email,
-        verficationToken.token
+      verificationToken.email,
+      verificationToken.token
       );
       console.log("Verification email result:", emailResult);
 

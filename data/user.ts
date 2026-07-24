@@ -73,10 +73,15 @@ export const getUserById = async (id: string) => {
         location: true,
         website: true,
         email: true,
-        emailVerified:true,
+        emailVerified: true,
         createdAt: true,
         followers: true,
         following: true,
+        userSkills: {
+          include: {
+            skill: true,
+          },
+        },
         _count: {
           select: {
             followers: true,

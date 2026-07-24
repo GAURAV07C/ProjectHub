@@ -8,6 +8,7 @@ interface ProjectActionsProps {
   commentCount: number;
   isLiking: boolean;
   onLike: () => void;
+  onToggleComments: () => void;
 }
 
 const ProjectActions: React.FC<ProjectActionsProps> = ({
@@ -16,6 +17,7 @@ const ProjectActions: React.FC<ProjectActionsProps> = ({
   commentCount,
   isLiking,
   onLike,
+  onToggleComments,
 }) => {
   return (
     <div className="flex flex-col">
@@ -34,10 +36,13 @@ const ProjectActions: React.FC<ProjectActionsProps> = ({
             />
             <span className="text-sm">{optimisticLiked}</span>
           </motion.button>
-          <div className="flex items-center space-x-1">
+          <button
+            onClick={onToggleComments}
+            className="flex items-center space-x-1"
+          >
             <MessageCircle className="h-5 w-5" />
             <span>{commentCount}</span>
-          </div>
+          </button>
         </div>
       </div>
     </div>

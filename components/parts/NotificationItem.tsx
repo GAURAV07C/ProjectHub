@@ -52,14 +52,14 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification }) => 
           </span>
         </div>
 
-        {notification.poroject &&
+        {notification.project &&
           (notification.type === "LIKE" || notification.type === "COMMENT") && (
             <div className="pl-6 space-y-2">
               <div className="text-sm text-muted-foreground rounded-md p-2 bg-muted/30 mt-2">
-                <p>{notification.poroject.title}</p>
-                {notification.poroject.imageUrl && (
+                <p>{notification.project.title}</p>
+                {notification.project.image && (
                   <Image
-                    src={notification.poroject.imageUrl}
+                    src={notification.project.image}
                     alt="Post content"
                     className="mt-2 rounded-md w-full max-w-[200px] h-auto object-cover"
                     width={50}

@@ -20,7 +20,7 @@ const ProjectCard = ({
   const [newComment, setNewComment] = useState("");
   const [isCommenting, setIsCommenting] = useState(false);
   const [isLiking, setIsLiking] = useState(false);
-  const [showComments] = useState(false);
+  const [showComments, setShowComments] = useState(false);
 
   const [hasLiked, setHasLiked] = useState(
     project.likes.some((like) => like.userId === userId)
@@ -131,6 +131,7 @@ const ProjectCard = ({
               commentCount={project._count.comments}
               isLiking={isLiking}
               onLike={handleLike}
+              onToggleComments={() => setShowComments((prev) => !prev)}
             />
             <CommentSection
               project={project}

@@ -22,7 +22,7 @@ export async function GET() {
             image: true,
           },
         },
-        poroject: {
+        project: {
           select: {
             title: true,
             id: true,

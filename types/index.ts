@@ -127,11 +127,11 @@ export interface Notification {
     userName: string | null;
     image: string | null;
   };
-  poroject: {
+  project: {
     title: string;
     id: string;
-    imageUrl: string | null;
-    Link: string | null;
+    image: string | null;
+    liveLink: string | null;
     description: string;
   } | null;
   comment: {

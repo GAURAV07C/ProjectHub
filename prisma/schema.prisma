@@ -160,7 +160,7 @@ model Like {
   userId    String
   projectId String
 
-  cretedAt DateTime @default(now())
+  createdAt DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -195,7 +195,7 @@ model Notification {
   user User @relation("userNotifications", fields: [userId], references: [id], onDelete: Cascade)
 
   creator  User     @relation("notificationCreator", fields: [creatorId], references: [id], onDelete: Cascade)
-  poroject Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  project Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
   comment  Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
 
   @@index([userId, createdAt])
