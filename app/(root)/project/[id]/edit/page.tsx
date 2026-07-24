@@ -34,10 +34,18 @@ const EditProjectPage = async ({
 
   const project = response.project as Project;
 
+  const projectSlug = project.slug || project.id;
+
+  const serializedProject = {
+    ...project,
+    createdAt: String(project.createdAt),
+    updatedAt: String(project.updatedAt),
+  };
+
   return (
     <div className="min-h-screen bg-[#0A0A0F] text-white py-12">
       <div className="container max-w-5xl mx-auto px-4">
-        <Link href={`/project/${id}`}>
+        <Link href={`/project/${projectSlug}`}>
           <Button variant="ghost" className="mb-6 text-white/60 hover:text-white">
             <ArrowLeft className="size-4 mr-2" />
             Back to Project
@@ -45,10 +53,8 @@ const EditProjectPage = async ({
         </Link>
 
         <ProjectForm
-          project={project}
-          onSuccess={() => {
-            window.location.href = `/project/${id}`;
-          }}
+          project={serializedProject}
+          redirectSlug={projectSlug}
         />
       </div>
     </div>

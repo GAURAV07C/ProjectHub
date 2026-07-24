@@ -12,7 +12,7 @@ const Feed = async () => {
   const protocol = headersList.get("x-forwarded-proto") || "http";
   const baseUrl = `${protocol}://${host}`;
 
-  const res = await fetch(`${baseUrl}/api/projects`, {
+  const res = await fetch(`${baseUrl}/api/projects?limit=20`, {
     cache: "no-store",
   });
   const projects: Project[] = await res.json();
