@@ -26,7 +26,7 @@ const ProfilePageClient: React.FC<ProfilePageClientProps> = ({
   currentUser: initialCurrentUser,
 }: ProfilePageClientProps) => {
   const [user, setUser] = useState(initialUser);
-  const [currentUser] = useState<NonNullable<User>>(initialCurrentUser as NonNullable<User>);
+  const [currentUser, setCurrentUser] = useState<NonNullable<User>>(initialCurrentUser as NonNullable<User>);
   const [isFollowings, setIsFollowing] = useState(initialIsFollowing);
   const [isUpdatingFollow, setIsUpdatingFollow] = useState(false);
   const [activeTab, setActiveTab] = useState<"followers" | "following">(
@@ -38,13 +38,7 @@ const ProfilePageClient: React.FC<ProfilePageClientProps> = ({
   const [searchQuery, setSearchQuery] = useState("");
   const [followerUsers, setFollowerUsers] = useState<NonNullable<User>[]>([]);
   const [followingUsers, setFollowingUsers] = useState<NonNullable<User>[]>([]);
-  const [followingUsersCreatedAt, setFollowingUsersCreatedAt] = useState<
-    Date | string | number | null
-  >();
-  const [followerUsersCreatedAt, setFollowerUsersCreatedAt] = useState<
-    Date | string | number | null
-  >();
-  const [isFollowedUser, setIsFollowedUser] = useState<boolean>(false);
+  const [followedUsersMap, setFollowedUsersMap] = useState<Record<string, boolean>>({});
 
   const handleFollow = async (targetId: string) => {
     if (!currentUser) return;
@@ -57,13 +51,27 @@ const ProfilePageClient: React.FC<ProfilePageClientProps> = ({
         body: JSON.stringify({ targetUserId: targetId }),
       });
       if (res.ok) {
-        setIsFollowing((prev) => !prev);
+        const willFollow = !isFollowings;
+        setIsFollowing(willFollow);
         setUser((prev) => ({
           ...prev,
           _count: {
             ...prev._count,
-            followers: prev._count.followers + (isFollowings ? -1 : 1),
+            ...(user.id === currentUser.id
+              ? { following: prev._count.following + (willFollow ? 1 : -1) }
+              : { followers: prev._count.followers + (willFollow ? 1 : -1) }),
           },
+        }));
+        setCurrentUser((prev) => ({
+          ...prev,
+          _count: {
+            ...prev._count,
+            following: (prev._count.following || 0) + (willFollow ? 1 : -1),
+          },
+        }));
+        setFollowedUsersMap((prev) => ({
+          ...prev,
+          [targetId]: willFollow,
         }));
       } else {
         toast.error("Failed to update follow status");
@@ -79,17 +87,15 @@ const ProfilePageClient: React.FC<ProfilePageClientProps> = ({
     const fetchFollowers = async () => {
       const fetchedFollowers = await Promise.all(
         user.followers.map(async (followerUser) => {
-          setFollowerUsersCreatedAt(followerUser.createdAt);
           try {
             const isUserFollowRes = await fetch(
               `/api/follow/status?targetUserId=${followerUser.followerId}`
             );
             const { isFollowing: isFollow } = await isUserFollowRes.json();
-            setIsFollowedUser(isFollow);
+            setFollowedUsersMap((prev) => ({ ...prev, [followerUser.followerId]: isFollow }));
           } catch {
-            setIsFollowedUser(false);
+            setFollowedUsersMap((prev) => ({ ...prev, [followerUser.followerId]: false }));
           }
-          setFollowerUsersCreatedAt(followerUser.createdAt);
           const userRes = await fetch(
             `/api/users/${followerUser.followerId}`
           );
@@ -112,7 +118,15 @@ const ProfilePageClient: React.FC<ProfilePageClientProps> = ({
     const fetchFollowing = async () => {
       const fetchFollowings = await Promise.all(
         user.following.map(async (followingUser) => {
-          setFollowingUsersCreatedAt(followingUser.createdAt);
+          try {
+            const isUserFollowRes = await fetch(
+              `/api/follow/status?targetUserId=${followingUser.followingId}`
+            );
+            const { isFollowing: isFollow } = await isUserFollowRes.json();
+            setFollowedUsersMap((prev) => ({ ...prev, [followingUser.followingId]: isFollow }));
+          } catch {
+            setFollowedUsersMap((prev) => ({ ...prev, [followingUser.followingId]: false }));
+          }
           const userRes = await fetch(
             `/api/users/${followingUser.followingId}`
           );
@@ -173,10 +187,8 @@ const ProfilePageClient: React.FC<ProfilePageClientProps> = ({
         onSearchChange={setSearchQuery}
         followerUsers={followerUsers}
         followingUsers={followingUsers}
-        followerUsersCreatedAt={followerUsersCreatedAt}
-        followingUsersCreatedAt={followingUsersCreatedAt}
         currentUserId={currentUserId}
-        isFollowedUser={isFollowedUser}
+        followedUsersMap={followedUsersMap}
         isUpdatingFollow={isUpdatingFollow}
         onFollow={handleFollow}
         user={user}

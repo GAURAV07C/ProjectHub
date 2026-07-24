@@ -59,14 +59,14 @@ const page = async ({ params }: { params: Promise<{ userName: string }> }) => {
     website: session?.user?.website ?? null,
     emailVerified: null,
     createdAt: new Date(),
+    followers: [],
+    following: [],
     _count: {
       projects: 0,
       following: 0,
       followers: 0,
       ...session?.user?._count,
     },
-    followers: user.followers,
-    following: user.following,
   };
 
   if(!currentUser) return null
