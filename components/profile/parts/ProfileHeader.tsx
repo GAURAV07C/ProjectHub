@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { format } from "date-fns";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
@@ -8,6 +10,7 @@ import {
   EditIcon,
   MapPinIcon,
   LinkIcon,
+  ArrowLeft,
 } from "lucide-react";
 import LoginButton from "../../auth/login-button";
 import { User } from "@/types";
@@ -43,6 +46,19 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
 
   return (
     <div className="w-full max-w-4xl mx-auto mb-12">
+      {/* Back Button */}
+      <div className="mb-4">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-white/80 hover:text-white hover:bg-white/10"
+          onClick={() => window.history.back()}
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back
+        </Button>
+      </div>
+
       {/* Profile Header - Instagram Style */}
       <div className="flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-10">
         {/* Avatar with gradient ring */}
